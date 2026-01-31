@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="50%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#a855f7"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#3b82f6"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle with Gradient -->
+  <circle cx="256" cy="256" r="250" fill="url(#bgGrad)" filter="url(#shadow)"/>
+  
+  <!-- Outer Tech Ring -->
+  <circle cx="256" cy="256" r="230" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+  <circle cx="256" cy="256" r="220" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="20,10"/>
+  
+  <!-- Digital Circuit Lines -->
+  <g stroke="url(#glowGrad)" stroke-width="2" fill="none" opacity="0.6" filter="url(#glow)">
+    <path d="M80,256 L120,256 L140,236 L180,236"/>
+    <path d="M332,236 L372,236 L392,256 L432,256"/>
+    <path d="M80,276 L100,276 L120,296 L160,296"/>
+    <path d="M352,296 L392,296 L412,276 L432,276"/>
+    <circle cx="180" cy="236" r="4" fill="url(#glowGrad)"/>
+    <circle cx="332" cy="236" r="4" fill="url(#glowGrad)"/>
+    <circle cx="160" cy="296" r="4" fill="url(#glowGrad)"/>
+    <circle cx="352" cy="296" r="4" fill="url(#glowGrad)"/>
+  </g>
+  
+  <!-- Graduation Cap - Modern Style -->
+  <g filter="url(#shadow)">
+    <!-- Cap Top -->
+    <polygon points="256,120 380,180 256,240 132,180" fill="#1e1b4b"/>
+    <polygon points="256,120 380,180 256,200 132,180" fill="#312e81"/>
+    
+    <!-- Cap Board Shadow -->
+    <ellipse cx="256" cy="180" rx="130" ry="35" fill="rgba(0,0,0,0.2)"/>
+    
+    <!-- Tassel -->
+    <line x1="340" y1="175" x2="360" y2="240" stroke="#fbbf24" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="360" cy="248" r="12" fill="#f59e0b"/>
+    <line x1="360" y1="260" x2="360" y2="290" stroke="#fbbf24" stroke-width="3"/>
+    <line x1="355" y1="290" x2="365" y2="290" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Letter E - Futuristic -->
+  <g filter="url(#glow)">
+    <path d="M190,270 L190,380 L280,380 L280,360 L220,360 L220,335 L270,335 L270,315 L220,315 L220,290 L280,290 L280,270 Z" 
+          fill="white"/>
+    <!-- E Glow accent -->
+    <rect x="186" y="320" width="8" height="20" fill="url(#glowGrad)" rx="2"/>
+  </g>
+  
+  <!-- Letter A - Futuristic -->
+  <g filter="url(#glow)">
+    <path d="M295,380 L295,270 L370,270 L370,380 L345,380 L345,340 L320,340 L320,380 Z M320,320 L345,320 L345,290 L320,290 Z" 
+          fill="white"/>
+    <!-- A Glow accent -->
+    <rect x="366" y="320" width="8" height="20" fill="url(#glowGrad)" rx="2"/>
+  </g>
+  
+  <!-- Bottom Tech Elements -->
+  <g stroke="url(#glowGrad)" stroke-width="1.5" fill="none" opacity="0.5">
+    <path d="M180,400 L200,400 L210,410 L240,410"/>
+    <path d="M272,410 L302,410 L312,400 L332,400"/>
+    <circle cx="256" cy="410" r="6" fill="url(#glowGrad)"/>
+  </g>
+  
+  <!-- Decorative Dots -->
+  <g fill="rgba(255,255,255,0.4)">
+    <circle cx="100" cy="150" r="3"/>
+    <circle cx="412" cy="150" r="3"/>
+    <circle cx="100" cy="362" r="3"/>
+    <circle cx="412" cy="362" r="3"/>
+  </g>
+  
+  <!-- Inner Glow Ring -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="40"/>
+</svg>

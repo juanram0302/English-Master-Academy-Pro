@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔐 Admin Panel - English Master Academy</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      padding: 30px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 30px;
+    }
+    header h1 { font-size: 2rem; margin-bottom: 10px; }
+    header p { color: #94a3b8; }
+    
+    .login-section, .admin-section {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .stat-card.green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .stat-card.purple { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+    .stat-card.orange { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .stat-number { font-size: 2.5rem; font-weight: bold; }
+    .stat-label { color: rgba(255,255,255,0.8); margin-top: 5px; }
+    
+    .section-title {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #3b82f6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      font-size: 1rem;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 15px;
+    }
+    
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      width: 100%;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(16,185,129,0.4); }
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+      padding: 8px 15px;
+      font-size: 0.85rem;
+    }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-login {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+      width: 100%;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    th {
+      background: rgba(0,0,0,0.3);
+      font-weight: 600;
+      color: #94a3b8;
+    }
+    tr:hover { background: rgba(255,255,255,0.05); }
+    
+    .status-active {
+      background: #10b981;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+    .status-expired {
+      background: #ef4444;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+    
+    .hidden { display: none; }
+    
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .alert-success { background: rgba(16,185,129,0.2); border: 1px solid #10b981; }
+    .alert-error { background: rgba(239,68,68,0.2); border: 1px solid #ef4444; }
+    
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+    }
+    
+    @media (max-width: 768px) {
+      .form-row { grid-template-columns: 1fr; }
+      table { font-size: 0.85rem; }
+      th, td { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔐 Panel de Administración</h1>
+      <p>English Master Academy - Gestión de Usuarios Premium</p>
+    </header>
+    
+    <!-- LOGIN SECTION -->
+    <div class="login-section" id="loginSection">
+      <h2 class="section-title">🔑 Acceso Administrador</h2>
+      <div class="form-group">
+        <label>Email de Administrador</label>
+        <input type="email" id="adminEmail" placeholder="tu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="adminPassword" placeholder="••••••••">
+      </div>
+      <button class="btn btn-login" onclick="loginAdmin()">Iniciar Sesión</button>
+      <div id="loginError" class="alert alert-error hidden" style="margin-top:15px;"></div>
+    </div>
+    
+    <!-- ADMIN SECTION -->
+    <div class="admin-section hidden" id="adminSection">
+      
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalUsers">0</div>
+          <div class="stat-label">Usuarios Totales</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-number" id="premiumUsers">0</div>
+          <div class="stat-label">Premium Activos</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-number" id="monthlyUsers">0</div>
+          <div class="stat-label">Plan Mensual</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-number" id="yearlyUsers">0</div>
+          <div class="stat-label">Plan Anual</div>
+        </div>
+      </div>
+      
+      <!-- ADD USER -->
+      <div class="login-section">
+        <h2 class="section-title">➕ Agregar Usuario Premium</h2>
+        <div id="addUserAlert" class="alert hidden"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email del Usuario</label>
+            <input type="email" id="newUserEmail" placeholder="usuario@email.com">
+          </div>
+          <div class="form-group">
+            <label>Plan</label>
+            <select id="newUserPlan">
+              <option value="mensual">Mensual ($9.99)</option>
+              <option value="anual">Anual ($79.99)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="addPremiumUser()">✅ Activar Premium</button>
+      </div>
+      
+      <!-- USER LIST -->
+      <div class="login-section">
+        <h2 class="section-title">👥 Usuarios Premium</h2>
+        <div class="search-box">
+          <input type="text" id="searchUser" placeholder="🔍 Buscar por email..." onkeyup="filterUsers()">
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Plan</th>
+                <th>Expira</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="5" style="text-align:center;color:#94a3b8;">Cargando usuarios...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <button class="btn btn-danger" onclick="logoutAdmin()" style="margin-top:20px;">🚪 Cerrar Sesión</button>
+    </div>
+  </div>
+
+  <!-- FIREBASE SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  
+  <script>
+    // ============================================
+    // 🔥 CONFIGURACIÓN FIREBASE - EDITAR AQUÍ
+    // ============================================
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY_AQUI",
+      authDomain: "TU_PROYECTO.firebaseapp.com",
+      databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
+      projectId: "TU_PROYECTO",
+      storageBucket: "TU_PROYECTO.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "TU_APP_ID"
+    };
+    
+    // Email del administrador (TÚ)
+    const ADMIN_EMAIL = "juanram0302@gmail.com"; // ← CAMBIAR POR TU EMAIL
+    // ============================================
+    
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    
+    let allUsers = [];
+    
+    // LOGIN ADMIN
+    async function loginAdmin() {
+      const email = document.getElementById('adminEmail').value;
+      const password = document.getElementById('adminPassword').value;
+      const errorDiv = document.getElementById('loginError');
+      
+      try {
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        
+        // Verificar si es admin
+        if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+          errorDiv.textContent = '❌ No tienes permisos de administrador';
+          errorDiv.classList.remove('hidden');
+          await auth.signOut();
+          return;
+        }
+        
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('adminSection').classList.remove('hidden');
+        loadUsers();
+        
+      } catch (error) {
+        errorDiv.textContent = '❌ Error: ' + error.message;
+        errorDiv.classList.remove('hidden');
+      }
+    }
+    
+    // LOGOUT
+    function logoutAdmin() {
+      auth.signOut();
+      document.getElementById('loginSection').classList.remove('hidden');
+      document.getElementById('adminSection').classList.add('hidden');
+    }
+    
+    // LOAD USERS
+    async function loadUsers() {
+      try {
+        const snapshot = await db.ref('premium_users').once('value');
+        const data = snapshot.val() || {};
+        
+        allUsers = Object.entries(data).map(([key, value]) => ({
+          id: key,
+          ...value
+        }));
+        
+        updateStats();
+        renderUsers(allUsers);
+        
+      } catch (error) {
+        console.error('Error loading users:', error);
+      }
+    }
+    
+    // UPDATE STATS
+    function updateStats() {
+      const now = new Date();
+      const activeUsers = allUsers.filter(u => new Date(u.fecha_fin) > now);
+      const monthlyUsers = activeUsers.filter(u => u.plan === 'mensual');
+      const yearlyUsers = activeUsers.filter(u => u.plan === 'anual');
+      
+      document.getElementById('totalUsers').textContent = allUsers.length;
+      document.getElementById('premiumUsers').textContent = activeUsers.length;
+      document.getElementById('monthlyUsers').textContent = monthlyUsers.length;
+      document.getElementById('yearlyUsers').textContent = yearlyUsers.length;
+    }
+    
+    // RENDER USERS TABLE
+    function renderUsers(users) {
+      const tbody = document.getElementById('usersTableBody');
+      const now = new Date();
+      
+      if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">No hay usuarios premium</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = users.map(user => {
+        const expDate = new Date(user.fecha_fin);
+        const isActive = expDate > now;
+        const statusClass = isActive ? 'status-active' : 'status-expired';
+        const statusText = isActive ? 'Activo' : 'Expirado';
+        
+        return `
+          <tr>
+            <td>${user.email}</td>
+            <td>${user.plan === 'anual' ? '📅 Anual' : '📆 Mensual'}</td>
+            <td>${expDate.toLocaleDateString()}</td>
+            <td><span class="${statusClass}">${statusText}</span></td>
+            <td><button class="btn btn-danger" onclick="removeUser('${user.id}')">🗑️</button></td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    // FILTER USERS
+    function filterUsers() {
+      const search = document.getElementById('searchUser').value.toLowerCase();
+      const filtered = allUsers.filter(u => u.email.toLowerCase().includes(search));
+      renderUsers(filtered);
+    }
+    
+    // ADD PREMIUM USER
+    async function addPremiumUser() {
+      const email = document.getElementById('newUserEmail').value.trim().toLowerCase();
+      const plan = document.getElementById('newUserPlan').value;
+      const alertDiv = document.getElementById('addUserAlert');
+      
+      if (!email || !email.includes('@')) {
+        alertDiv.className = 'alert alert-error';
+        alertDiv.textContent = '❌ Ingresa un email válido';
+        alertDiv.classList.remove('hidden');
+        return;
+      }
+      
+      // Calcular fecha de expiración
+      const now = new Date();
+      let fechaFin;
+      if (plan === 'anual') {
+        fechaFin = new Date(now.setFullYear(now.getFullYear() + 1));
+      } else {
+        fechaFin = new Date(now.setMonth(now.getMonth() + 1));
+      }
+      
+      try {
+        // Crear ID único basado en email
+        const emailKey = email.replace(/[.#$[\]]/g, '_');
+        
+        await db.ref('premium_users/' + emailKey).set({
+          email: email,
+          plan: plan,
+          fecha_inicio: new Date().toISOString(),
+          fecha_fin: fechaFin.toISOString(),
+          activo: true
+        });
+        
+        alertDiv.className = 'alert alert-success';
+        alertDiv.textContent = `✅ Usuario ${email} activado como Premium (${plan}) hasta ${fechaFin.toLocaleDateString()}`;
+        alertDiv.classList.remove('hidden');
+        
+        document.getElementById('newUserEmail').value = '';
+        loadUsers();
+        
+        setTimeout(() => alertDiv.classList.add('hidden'), 5000);
+        
+      } catch (error) {
+        alertDiv.className = 'alert alert-error';
+        alertDiv.textContent = '❌ Error: ' + error.message;
+        alertDiv.classList.remove('hidden');
+      }
+    }
+    
+    // REMOVE USER
+    async function removeUser(userId) {
+      if (!confirm('¿Seguro que quieres eliminar este usuario premium?')) return;
+      
+      try {
+        await db.ref('premium_users/' + userId).remove();
+        loadUsers();
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+    
+    // CHECK AUTH STATE
+    auth.onAuthStateChanged(user => {
+      if (user && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('adminSection').classList.remove('hidden');
+        loadUsers();
+      }
+    });
+  </script>
+</body>
+</html>

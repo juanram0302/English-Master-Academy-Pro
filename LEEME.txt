@@ -1,0 +1,162 @@
+================================================================================
+🎓 ENGLISH MASTER ACADEMY v2.0 - CURSO COMPLETO DE INGLÉS
+================================================================================
+
+¡Tu aplicación ha sido completamente mejorada y expandida!
+
+================================================================================
+📋 TODAS LAS MEJORAS IMPLEMENTADAS:
+================================================================================
+
+✅ BUGS CORREGIDOS:
+   • Alfabeto ya no dice "Capital A" - ahora dice solo "A, B, C..."
+   • Play All funciona correctamente en smartphones
+   • Eliminado el indicador de "Modo Offline" 
+
+✅ NUEVAS FUNCIONES:
+   • 🎤 Práctica de Pronunciación con Score (0-100%)
+   • 📖 Palabras clickeables en lecturas (muestra traducción)
+   • 👤 Sistema de Usuarios (registro/login)
+   • 🎁 7 días de prueba gratis automática
+   • 💳 Pagos por Transferencia/USDT/BTC
+   • 📱 Contacto directo por WhatsApp
+
+✅ 12 JUEGOS EDUCATIVOS COMPLETOS:
+   1. Memory Match
+   2. Hangman (Ahorcado)
+   3. Word Scramble
+   4. Vocabulary Quiz
+   5. Spelling Bee
+   6. Translation Challenge
+   7. Listening Game
+   8. Match Words
+   9. Fill the Gap
+   10. Speed Round
+   11. Categories
+   12. Sentence Builder
+
+================================================================================
+📚 CONTENIDO DEL CURSO (1400+ PALABRAS):
+================================================================================
+
+NIVEL A1-A2 (Principiante):
+   • Alfabeto y Números
+   • Colores y Tiempo
+   • Familia y Cuerpo Humano
+   • Animales y Comida
+   • Casa y Ropa
+   • Profesiones y Lugares
+   • Emociones y Verbos Básicos
+
+NIVEL B1-B2 (Intermedio):
+   • Tecnología e Internet
+   • Salud y Medicina
+   • Viajes y Transporte
+   • Inglés de Negocios
+   • Ciencia y Ambiente
+   • Phrasal Verbs (55+)
+   • Expresiones Idiomáticas (55+)
+   • Conectores y Linking Words (40+)
+
+NIVEL C1-C2 (Avanzado):
+   • Inglés Académico
+   • Términos Legales
+   • Emociones Avanzadas
+   • Verbos Irregulares (100+)
+   • Lecturas Avanzadas
+   • Conversaciones de Alto Nivel
+
+================================================================================
+💰 PRECIOS CONFIGURADOS:
+================================================================================
+
+   • Mensual: $9.99 USD/mes
+   • Anual:   $79.99 USD/año (ahorra 33%)
+
+================================================================================
+⚙️ CONFIGURACIÓN REQUERIDA:
+================================================================================
+
+1. NÚMERO DE WHATSAPP (IMPORTANTE)
+   Abre index.html y busca esta línea:
+   
+   const WHATSAPP_NUMBER = '+18494029255';
+   
+   Cámbiala por TU número de WhatsApp con código de país:
+   Ejemplo: '+1234567890' o '+52123456789'
+
+2. CÓDIGOS DE ACTIVACIÓN
+   Busca la función "activatePremium" para ver/modificar códigos válidos.
+   Códigos actuales incluyen:
+   - ADMIN-2024, ADMIN-2025, ADMIN-2026
+   - MASTER-ADMIN
+   - PREMIUM2024, PREMIUM2025
+   - FAMILIA-GRATIS
+   - etc.
+
+================================================================================
+🚀 CÓMO SUBIR TU APP (HOSTING GRATIS):
+================================================================================
+
+OPCIÓN 1: NETLIFY (Más fácil - Recomendado)
+   1. Ve a https://netlify.com
+   2. Crea una cuenta gratis
+   3. Arrastra la carpeta completa a Netlify
+   4. ¡Listo! Tendrás tu URL en segundos
+
+OPCIÓN 2: VERCEL
+   1. Ve a https://vercel.com
+   2. Crea cuenta y conecta con GitHub
+   3. Sube los archivos
+   4. Deploy automático
+
+OPCIÓN 3: GITHUB PAGES (Gratis)
+   1. Crea repositorio en GitHub
+   2. Sube todos los archivos
+   3. Settings → Pages → Enable
+   4. Tu URL: tu-usuario.github.io/nombre-repo
+
+================================================================================
+🔐 CÓMO ACTIVAR USUARIOS PREMIUM:
+================================================================================
+
+Cuando alguien paga:
+
+1. Recibirás el comprobante por WhatsApp
+2. Genera un código único, ejemplo:
+   - "PAGO-MARIA-2024"
+   - "CLIENTE-JUAN-123"
+   - O cualquier código de 16+ caracteres
+
+3. El usuario ingresa el código en la app
+4. ¡Queda activado automáticamente!
+
+También puedes agregar códigos directamente al archivo
+buscando "validCodes" en index.html
+
+================================================================================
+📱 ARCHIVOS INCLUIDOS:
+================================================================================
+
+   • index.html         - Aplicación completa (todo en uno)
+   • manifest.json      - Configuración PWA (instalar como app)
+   • service-worker.js  - Caché para mejor rendimiento
+   • icon-*.png         - Iconos en varios tamaños
+   • LEEME.txt          - Este archivo
+
+================================================================================
+💡 TIPS:
+================================================================================
+
+• La app se puede instalar como aplicación en el teléfono
+• Funciona sin conexión después de cargar una vez
+• Los usuarios pueden crear cuenta y guardar su progreso
+• El trial de 7 días da acceso completo automáticamente
+
+================================================================================
+
+¡Éxito con tu academia de inglés! 🎓🚀
+
+Para soporte o mejoras adicionales, no dudes en contactar.
+
+================================================================================
