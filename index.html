@@ -6072,7 +6072,7 @@ async function verificarEstadoCompleto(email) {
     }
     
     // 2. Si no es Premium, verificar Trial
-    const userSnapshot = await firebaseDB.ref('users/' + emailKey).once('value');
+    const userSnapshot = await firebaseDB.ref('registered_users/' + emailKey).once('value');
     
     if (userSnapshot.exists()) {
       const userData = userSnapshot.val();
@@ -6519,7 +6519,7 @@ async function registerUser() {
   if (firebaseDB) {
     try {
       const emailKey = email.replace(/[.#$[\]]/g, '_');
-      await firebaseDB.ref('users/' + emailKey).set({
+      await firebaseDB.ref('registered_users/' + emailKey).set({
         name: name,
         email: email,
         createdAt: new Date().toISOString(),
@@ -6564,7 +6564,7 @@ async function loginUser() {
   if (firebaseDB) {
     try {
       const emailKey = email.replace(/[.#$[\]]/g, '_');
-      const snapshot = await firebaseDB.ref('users/' + emailKey).once('value');
+      const snapshot = await firebaseDB.ref('registered_users/' + emailKey).once('value');
       
       if (snapshot.exists()) {
         const firebaseUser = snapshot.val();
@@ -6598,7 +6598,7 @@ async function loginUser() {
           }
           
           // Actualizar dispositivos en Firebase
-          await firebaseDB.ref('users/' + emailKey + '/devices').set(devices);
+          await firebaseDB.ref('registered_users/' + emailKey + '/devices').set(devices);
         }
         
         // Crear objeto de usuario completo
@@ -6660,7 +6660,7 @@ async function sincronizarDatosFirebase(email) {
     const emailKey = email.replace(/[.#$[\]]/g, '_');
     
     // Obtener datos del usuario de Firebase
-    const snapshot = await firebaseDB.ref('users/' + emailKey).once('value');
+    const snapshot = await firebaseDB.ref('registered_users/' + emailKey).once('value');
     
     if (snapshot.exists()) {
       const firebaseData = snapshot.val();
