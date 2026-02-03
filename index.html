@@ -1134,15 +1134,15 @@
       <div class="premium-prices">
         <div class="premium-price-card" onclick="selectPlan('monthly')">
           <div class="price-period">Mensual</div>
-          <div class="price-amount">$9.99</div>
+          <div class="price-amount">$4.99</div>
           <div class="price-period">/mes</div>
         </div>
         <div class="premium-price-card popular selected" onclick="selectPlan('yearly')">
           <div class="popular-tag">MEJOR VALOR</div>
           <div class="price-period">Anual</div>
-          <div class="price-amount">$79.99</div>
+          <div class="price-amount">$49.99</div>
           <div class="price-period">/año</div>
-          <div class="price-save">Ahorra 33%</div>
+          <div class="price-save">¡Ahorra $10!</div>
         </div>
       </div>
       
@@ -1215,16 +1215,26 @@
       </div>
     </header>
     
-    <!-- Ad Banner Top -->
+    <!-- Ad Banner Top - Solo visible para usuarios FREE -->
     <div class="ad-banner" id="adBannerTop">
-      <!-- Google AdSense Auto Ad - se mostrará cuando sea aprobado -->
+      <!-- Google AdSense Responsive Ad -->
       <ins class="adsbygoogle"
            style="display:block"
            data-ad-client="ca-pub-4675582977351575"
            data-ad-slot="auto"
-           data-ad-format="auto"
+           data-ad-format="horizontal"
            data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      <script>
+        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+      </script>
+    </div>
+    
+    <!-- Banner alternativo si AdSense no carga -->
+    <div class="ad-banner ad-fallback hidden" id="adFallbackTop" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); cursor: pointer;" onclick="openPremiumModal()">
+      <div style="text-align:center;">
+        <div style="font-size:1.2rem; font-weight:700; color:white;">👑 ¡Quita los anuncios!</div>
+        <div style="font-size:0.9rem; color:rgba(255,255,255,0.8);">Hazte Premium por solo $4.99/mes</div>
+      </div>
     </div>
 
     <div class="stats-bar">
@@ -6007,14 +6017,127 @@ function celebrate() {
 }
 
 // ============================================
-// MONETIZATION SYSTEM
+// MONETIZATION SYSTEM - MEJORADO
 // ============================================
 let isPremium = false;
+let isInTrial = false;
 let selectedPlan = 'yearly';
 
 // Check premium status on load
 function checkPremiumStatus() {
-  isPremium = localStorage.getItem('isPremium') === 'true';
+  // Primero verificar si tiene trial activo o es premium en Firebase
+  if (currentUser) {
+    verificarEstadoCompleto(currentUser.email);
+  } else {
+    // Usuario no logueado - mostrar como free
+    isPremium = false;
+    isInTrial = false;
+    updatePremiumUI();
+  }
+}
+
+// Verificar estado completo del usuario (Premium + Trial + Multi-dispositivo)
+async function verificarEstadoCompleto(email) {
+  if (!firebaseDB) {
+    // Modo offline - usar localStorage
+    checkLocalTrialStatus();
+    return;
+  }
+  
+  try {
+    const emailKey = email.replace(/[.#$[\]]/g, '_');
+    
+    // 1. Verificar si es Premium en Firebase
+    const premiumSnapshot = await firebaseDB.ref('premium_users/' + emailKey).once('value');
+    
+    if (premiumSnapshot.exists()) {
+      const premiumData = premiumSnapshot.val();
+      const fechaFin = new Date(premiumData.fecha_fin);
+      const ahora = new Date();
+      
+      if (premiumData.activo && fechaFin > ahora) {
+        // Usuario ES Premium activo
+        isPremium = true;
+        isInTrial = false;
+        currentUser.isPremium = true;
+        currentUser.premiumUntil = premiumData.fecha_fin;
+        currentUser.premiumPlan = premiumData.plan;
+        
+        // Ocultar banners de trial
+        document.getElementById('trialBanner').classList.add('hidden');
+        updatePremiumUI();
+        console.log('✅ Usuario Premium activo hasta:', fechaFin);
+        return;
+      }
+    }
+    
+    // 2. Si no es Premium, verificar Trial
+    const userSnapshot = await firebaseDB.ref('users/' + emailKey).once('value');
+    
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.val();
+      const trialEnd = new Date(userData.trialEndDate);
+      const ahora = new Date();
+      
+      if (ahora < trialEnd) {
+        // Usuario en período de prueba activo
+        const daysLeft = Math.ceil((trialEnd - ahora) / (1000 * 60 * 60 * 24));
+        isInTrial = true;
+        isPremium = true; // Dar acceso premium durante trial
+        
+        document.getElementById('trialDaysLeft').textContent = daysLeft;
+        document.getElementById('trialBanner').classList.remove('hidden');
+        document.getElementById('trialInfoBox').style.display = 'block';
+        document.getElementById('modalTrialDays').textContent = daysLeft;
+        
+        console.log('🎉 Usuario en Trial - Días restantes:', daysLeft);
+      } else {
+        // Trial expirado
+        isInTrial = false;
+        isPremium = false;
+        document.getElementById('trialBanner').classList.add('hidden');
+        console.log('⚠️ Trial expirado');
+      }
+    }
+    
+    updatePremiumUI();
+    
+  } catch (error) {
+    console.error('Error verificando estado:', error);
+    checkLocalTrialStatus();
+  }
+}
+
+// Verificar trial en modo local (fallback)
+function checkLocalTrialStatus() {
+  if (!currentUser) return;
+  
+  const trialEnd = new Date(currentUser.trialEndDate);
+  const now = new Date();
+  
+  if (currentUser.isPremium) {
+    isPremium = true;
+    isInTrial = false;
+    document.getElementById('trialBanner').classList.add('hidden');
+    updatePremiumUI();
+    return;
+  }
+  
+  if (now < trialEnd) {
+    const daysLeft = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
+    isInTrial = true;
+    isPremium = true; // Dar acceso durante trial
+    
+    document.getElementById('trialDaysLeft').textContent = daysLeft;
+    document.getElementById('trialBanner').classList.remove('hidden');
+    document.getElementById('trialInfoBox').style.display = 'block';
+    document.getElementById('modalTrialDays').textContent = daysLeft;
+  } else {
+    isInTrial = false;
+    isPremium = false;
+    document.getElementById('trialBanner').classList.add('hidden');
+  }
+  
   updatePremiumUI();
 }
 
@@ -6023,34 +6146,66 @@ function updatePremiumUI() {
   const premiumBtn = document.getElementById('premiumHeaderBtn');
   const supportBtn = document.getElementById('supportBtn');
   const adBanners = document.querySelectorAll('.ad-banner');
+  const adFallbacks = document.querySelectorAll('.ad-fallback');
   const lockedContent = document.querySelectorAll('.locked-content');
   
   if(isPremium) {
-    // User is premium
+    // User is premium (paid or in trial)
     if(premiumBtn) {
-      premiumBtn.innerHTML = '✅ PRO';
-      premiumBtn.classList.add('is-premium');
+      if(isInTrial) {
+        premiumBtn.innerHTML = '🎁 TRIAL';
+        premiumBtn.classList.remove('is-premium');
+        premiumBtn.style.background = 'linear-gradient(135deg, #f59e0b, #eab308)';
+      } else {
+        premiumBtn.innerHTML = '✅ PRO';
+        premiumBtn.classList.add('is-premium');
+        premiumBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+      }
     }
+    // Ocultar anuncios para usuarios premium (pagados o trial)
     if(supportBtn) supportBtn.style.display = 'none';
     adBanners.forEach(ad => ad.classList.add('hidden'));
+    adFallbacks.forEach(ad => ad.classList.add('hidden'));
     lockedContent.forEach(el => el.classList.remove('locked-content'));
   } else {
     // User is free
     if(premiumBtn) {
       premiumBtn.innerHTML = '👑 Premium';
       premiumBtn.classList.remove('is-premium');
+      premiumBtn.style.background = 'linear-gradient(135deg, #f59e0b, #eab308)';
     }
+    // Mostrar anuncios para usuarios free
     if(supportBtn) supportBtn.style.display = 'flex';
-    adBanners.forEach(ad => ad.classList.remove('hidden'));
+    adBanners.forEach(ad => {
+      if(!ad.classList.contains('ad-fallback')) {
+        ad.classList.remove('hidden');
+      }
+    });
+    // Mostrar fallback después de un tiempo si AdSense no carga
+    setTimeout(() => {
+      const mainAd = document.querySelector('#adBannerTop ins.adsbygoogle');
+      if(mainAd && (!mainAd.innerHTML || mainAd.innerHTML.trim() === '')) {
+        document.getElementById('adFallbackTop')?.classList.remove('hidden');
+      }
+    }, 3000);
   }
 }
 
 // Open premium modal
 function openPremiumModal() {
-  if(isPremium) {
-    alert('🎉 ¡Ya eres usuario Premium! Gracias por tu apoyo.');
+  // Si ya es premium confirmado (no trial), mostrar mensaje
+  if(isPremium && !isInTrial) {
+    alert('🎉 ¡Ya eres usuario Premium! Gracias por tu apoyo.\n\nDisfruta de todo el contenido sin restricciones.');
     return;
   }
+  
+  // Si está en trial, mostrar info del trial en el modal
+  if(isInTrial && currentUser) {
+    document.getElementById('trialInfoBox').style.display = 'block';
+  } else {
+    document.getElementById('trialInfoBox').style.display = 'none';
+  }
+  
   document.getElementById('premiumModal').classList.add('show');
 }
 
@@ -6183,22 +6338,25 @@ function showInterstitialAd() {
 // Track user engagement for monetization
 let interactionCount = 0;
 function trackInteraction() {
-  if(isPremium) return;
+  // No trackear si es premium o está en trial
+  if(isPremium || isInTrial) return;
+  
   interactionCount++;
   
-  // Show premium modal after 20 interactions
-  if(interactionCount === 20) {
+  // Solo mostrar modal si el usuario NO está registrado después de 30 interacciones
+  if(interactionCount === 30 && !currentUser) {
     setTimeout(() => {
-      openPremiumModal();
+      openAuthModal();
     }, 2000);
   }
   
-  // Show premium modal again after 50 interactions
-  if(interactionCount === 50) {
+  // Si el trial expiró, mostrar premium después de 50 interacciones
+  if(interactionCount === 50 && currentUser && !isPremium && !isInTrial) {
     setTimeout(() => {
       openPremiumModal();
     }, 2000);
   }
+}
 }
 
 // Add click tracking to main buttons
@@ -6305,7 +6463,7 @@ function showAuthTab(tab) {
   }
 }
 
-function registerUser() {
+async function registerUser() {
   const name = document.getElementById('registerName').value.trim();
   const email = document.getElementById('registerEmail').value.trim().toLowerCase();
   const password = document.getElementById('registerPassword').value;
@@ -6331,13 +6489,6 @@ function registerUser() {
     return;
   }
   
-  // Verificar si el usuario ya existe
-  const users = JSON.parse(localStorage.getItem('ema_users') || '{}');
-  if(users[email]) {
-    alert('❌ Este email ya está registrado. Intenta iniciar sesión.');
-    return;
-  }
-  
   // Crear nuevo usuario con trial de 7 días
   const trialEndDate = new Date();
   trialEndDate.setDate(trialEndDate.getDate() + 7);
@@ -6345,26 +6496,62 @@ function registerUser() {
   const newUser = {
     name: name,
     email: email,
-    password: btoa(password), // Encode simple (en producción usar bcrypt en backend)
+    password: btoa(password),
     createdAt: new Date().toISOString(),
     trialEndDate: trialEndDate.toISOString(),
     isPremium: false,
     premiumUntil: null,
+    devices: [],
     progress: {}
   };
+  
+  // Guardar en localStorage primero
+  const users = JSON.parse(localStorage.getItem('ema_users') || '{}');
+  if(users[email]) {
+    alert('❌ Este email ya está registrado. Intenta iniciar sesión.');
+    return;
+  }
   
   users[email] = newUser;
   localStorage.setItem('ema_users', JSON.stringify(users));
   
-  // Auto login
-  loginWithUser(newUser);
+  // Guardar en Firebase si está disponible
+  if (firebaseDB) {
+    try {
+      const emailKey = email.replace(/[.#$[\]]/g, '_');
+      await firebaseDB.ref('users/' + emailKey).set({
+        name: name,
+        email: email,
+        createdAt: new Date().toISOString(),
+        trialEndDate: trialEndDate.toISOString(),
+        isPremium: false,
+        devices: [generateDeviceId()]
+      });
+      console.log('✅ Usuario guardado en Firebase');
+    } catch (error) {
+      console.log('Error guardando en Firebase:', error);
+    }
+  }
   
-  alert('🎉 ¡Cuenta creada exitosamente!\n\nTienes 7 días de prueba gratuita.');
+  // Auto login
+  await loginWithUser(newUser);
+  
+  alert('🎉 ¡Cuenta creada exitosamente!\n\n¡Tienes 7 días de prueba GRATIS con acceso completo a todo el contenido!\n\nPuedes usar tu cuenta en hasta 3 dispositivos.');
   closeAuthModal();
   celebrate();
 }
 
-function loginUser() {
+// Generar ID único para dispositivo
+function generateDeviceId() {
+  let deviceId = localStorage.getItem('ema_device_id');
+  if (!deviceId) {
+    deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('ema_device_id', deviceId);
+  }
+  return deviceId;
+}
+
+async function loginUser() {
   const email = document.getElementById('loginEmail').value.trim().toLowerCase();
   const password = document.getElementById('loginPassword').value;
   
@@ -6373,6 +6560,69 @@ function loginUser() {
     return;
   }
   
+  // Primero intentar verificar en Firebase
+  if (firebaseDB) {
+    try {
+      const emailKey = email.replace(/[.#$[\]]/g, '_');
+      const snapshot = await firebaseDB.ref('users/' + emailKey).once('value');
+      
+      if (snapshot.exists()) {
+        const firebaseUser = snapshot.val();
+        
+        // Verificar contraseña (primero en Firebase, luego local)
+        const users = JSON.parse(localStorage.getItem('ema_users') || '{}');
+        const localUser = users[email];
+        
+        if (localUser && atob(localUser.password) !== password) {
+          alert('❌ Contraseña incorrecta');
+          return;
+        }
+        
+        // Verificar límite de dispositivos (máximo 3)
+        const deviceId = generateDeviceId();
+        let devices = firebaseUser.devices || [];
+        
+        if (!devices.includes(deviceId)) {
+          if (devices.length >= 3) {
+            // Ofrecer eliminar dispositivo más antiguo
+            const confirmRemove = confirm('⚠️ Ya tienes 3 dispositivos registrados.\n\n¿Deseas cerrar sesión en el dispositivo más antiguo para continuar?');
+            if (confirmRemove) {
+              devices.shift(); // Eliminar el primero (más antiguo)
+              devices.push(deviceId);
+            } else {
+              alert('❌ No puedes iniciar sesión en más de 3 dispositivos.\n\nContacta soporte si necesitas ayuda.');
+              return;
+            }
+          } else {
+            devices.push(deviceId);
+          }
+          
+          // Actualizar dispositivos en Firebase
+          await firebaseDB.ref('users/' + emailKey + '/devices').set(devices);
+        }
+        
+        // Crear objeto de usuario completo
+        const user = {
+          ...firebaseUser,
+          password: localUser ? localUser.password : btoa(password),
+          devices: devices
+        };
+        
+        // Actualizar localStorage
+        users[email] = user;
+        localStorage.setItem('ema_users', JSON.stringify(users));
+        
+        await loginWithUser(user);
+        alert('✅ ¡Bienvenido de nuevo, ' + user.name + '!');
+        closeAuthModal();
+        return;
+      }
+    } catch (error) {
+      console.log('Error verificando Firebase:', error);
+    }
+  }
+  
+  // Fallback: verificar en localStorage
   const users = JSON.parse(localStorage.getItem('ema_users') || '{}');
   const user = users[email];
   
@@ -6386,69 +6636,54 @@ function loginUser() {
     return;
   }
   
-  loginWithUser(user);
+  await loginWithUser(user);
   alert('✅ ¡Bienvenido de nuevo, ' + user.name + '!');
   closeAuthModal();
 }
 
-function loginWithUser(user) {
+async function loginWithUser(user) {
   currentUser = user;
   localStorage.setItem('ema_currentUser', user.email);
   updateUserUI();
-  checkTrialStatus();
   
-  // Verificar premium en Firebase
-  verificarPremiumFirebase(user.email);
+  // Verificar estado premium/trial en Firebase
+  await verificarEstadoCompleto(user.email);
 }
 
 // ============================================
-// VERIFICACIÓN PREMIUM EN FIREBASE
+// SINCRONIZACIÓN CON FIREBASE
 // ============================================
-async function verificarPremiumFirebase(email) {
-  if (!firebaseDB) {
-    console.log('Firebase no configurado, usando modo local');
-    return;
-  }
+async function sincronizarDatosFirebase(email) {
+  if (!firebaseDB) return;
   
   try {
     const emailKey = email.replace(/[.#$[\]]/g, '_');
-    const snapshot = await firebaseDB.ref('premium_users/' + emailKey).once('value');
+    
+    // Obtener datos del usuario de Firebase
+    const snapshot = await firebaseDB.ref('users/' + emailKey).once('value');
     
     if (snapshot.exists()) {
-      const data = snapshot.val();
-      const fechaFin = new Date(data.fecha_fin);
-      const ahora = new Date();
+      const firebaseData = snapshot.val();
       
-      if (data.activo && fechaFin > ahora) {
-        // Usuario ES premium en Firebase
-        currentUser.isPremium = true;
-        currentUser.premiumUntil = data.fecha_fin;
-        currentUser.premiumPlan = data.plan;
+      // Actualizar localStorage con datos de Firebase
+      const users = JSON.parse(localStorage.getItem('ema_users') || '{}');
+      if (users[email]) {
+        users[email] = {
+          ...users[email],
+          ...firebaseData,
+          password: users[email].password // Mantener contraseña local
+        };
+        localStorage.setItem('ema_users', JSON.stringify(users));
         
-        // Guardar en localStorage
-        const users = JSON.parse(localStorage.getItem('ema_users') || '{}');
-        if (users[email]) {
-          users[email].isPremium = true;
-          users[email].premiumUntil = data.fecha_fin;
-          localStorage.setItem('ema_users', JSON.stringify(users));
+        if (currentUser && currentUser.email === email) {
+          currentUser = users[email];
         }
-        
-        console.log('✅ Usuario Premium verificado en Firebase hasta:', fechaFin);
-        updateUserUI();
-        
-        // Ocultar banner de trial si existe
-        const trialBanner = document.getElementById('trialBanner');
-        if (trialBanner) trialBanner.style.display = 'none';
-        
-      } else {
-        console.log('⚠️ Suscripción expirada en Firebase');
-        currentUser.isPremium = false;
       }
-    } else {
-      console.log('Usuario no encontrado en Firebase Premium');
     }
+    
+    console.log('✅ Datos sincronizados con Firebase');
   } catch (error) {
-    console.log('Error verificando Firebase:', error);
+    console.log('Error sincronizando:', error);
   }
 }
 
@@ -6523,42 +6758,19 @@ function resetPassword() {
   }
 }
 
-function checkTrialStatus() {
-  if(!currentUser) return;
-  
-  const trialEnd = new Date(currentUser.trialEndDate);
-  const now = new Date();
-  
-  if(currentUser.isPremium) {
-    document.getElementById('trialBanner').classList.add('hidden');
-    return;
-  }
-  
-  if(now < trialEnd) {
-    const daysLeft = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
-    document.getElementById('trialDaysLeft').textContent = daysLeft;
-    document.getElementById('trialBanner').classList.remove('hidden');
-    document.getElementById('trialInfoBox').style.display = 'block';
-    document.getElementById('modalTrialDays').textContent = daysLeft;
-    
-    // Dar acceso completo durante el trial
-    isPremium = true;
-    updatePremiumUI();
-  } else {
-    document.getElementById('trialBanner').classList.add('hidden');
-    isPremium = false;
-    updatePremiumUI();
-  }
-}
-
-function loadCurrentUser() {
+async function loadCurrentUser() {
   const savedEmail = localStorage.getItem('ema_currentUser');
   if(savedEmail) {
     const users = JSON.parse(localStorage.getItem('ema_users') || '{}');
     if(users[savedEmail]) {
       currentUser = users[savedEmail];
       updateUserUI();
-      checkTrialStatus();
+      
+      // Sincronizar con Firebase y verificar estado
+      if (firebaseDB) {
+        await sincronizarDatosFirebase(savedEmail);
+      }
+      await verificarEstadoCompleto(savedEmail);
     }
   }
 }
@@ -6580,7 +6792,7 @@ function selectPaymentMethod(method) {
   
   detailsDiv.style.display = 'block';
   
-  const price = selectedPlan === 'yearly' ? '$79.99 USD' : '$9.99 USD';
+  const price = selectedPlan === 'yearly' ? '$49.99 USD' : '$4.99 USD';
   
   if(method === 'transfer') {
     titleEl.textContent = '🏦 Datos Bancarios';
@@ -6640,7 +6852,7 @@ function copyPaymentInfo() {
 }
 
 function contactWhatsApp() {
-  const planText = selectedPlan === 'yearly' ? 'Plan Anual ($79.99/año)' : 'Plan Mensual ($9.99/mes)';
+  const planText = selectedPlan === 'yearly' ? 'Plan Anual ($49.99/año - Pago único)' : 'Plan Mensual ($4.99/mes)';
   const methodText = {
     'transfer': 'Transferencia Bancaria',
     'usdt': 'USDT (Tether)',
@@ -7573,18 +7785,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   document.getElementById('streak').textContent = streak;
   
-  // Show auth modal to new users OR premium modal after delay
+  // Show auth modal to new users - SOLO si no está registrado
+  // NO mostrar premium modal automáticamente si está en trial
   if(!localStorage.getItem('hasSeenAuth') && !currentUser) {
     setTimeout(() => {
       openAuthModal();
       localStorage.setItem('hasSeenAuth', 'true');
-    }, 8000);
-  } else if(!localStorage.getItem('hasSeenPremium') && !isPremium) {
+    }, 5000);
+  } else if(!currentUser) {
+    // Usuario no registrado, invitarlo después de un tiempo
     setTimeout(() => {
-      openPremiumModal();
-      localStorage.setItem('hasSeenPremium', 'true');
-    }, 20000);
+      if(!currentUser) {
+        openAuthModal();
+      }
+    }, 30000);
   }
+  // NOTA: El premium modal ya NO se muestra automáticamente
+  // Solo se muestra cuando el trial expira o el usuario hace clic
 });
 </script>
 </body>
