@@ -1004,12 +1004,13 @@
 
 
     /* Word of the Day */
-    .wotd-banner { background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
+    .wotd-banner { background: linear-gradient(135deg, #4f46e5, #7c3aed); border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; cursor: pointer; transition: all 0.3s; }
     .wotd-banner:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.4); }
-    .wotd-word { font-size: 1.5rem; font-weight: 900; color: white; }
-    .wotd-phonetic { font-size: 0.85rem; color: rgba(255,255,255,0.7); font-style: italic; }
-    .wotd-meaning { font-size: 0.95rem; color: rgba(255,255,255,0.9); margin-top: 4px; }
-    .wotd-label { position: absolute; top: 12px; right: 16px; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; color: white; }
+    .wotd-label { display: inline-block; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.9); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+    .wotd-word { font-size: 1.6rem; font-weight: 900; color: white; margin-bottom: 2px; }
+    .wotd-phonetic { font-size: 0.8rem; color: rgba(255,255,255,0.6); font-style: italic; margin-bottom: 8px; }
+    .wotd-meaning { font-size: 0.9rem; color: rgba(255,255,255,0.85); }
+    .wotd-example { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 6px; font-style: italic; }
     /* Achievement Badges */
     .achievement-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.1); margin: 2px; }
     .badges-row { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin: 8px 0; }
@@ -8579,11 +8580,11 @@ function getWordOfDay() {
 function renderWordOfDay() {
   var w = getWordOfDay();
   return '<div class="wotd-banner" onclick="speakWord(\'' + w.en + '\')">' +
-    '<div class="wotd-label">📅 PALABRA DEL DÍA</div>' +
-    '<div class="wotd-word">' + w.en + '</div>' +
-    '<div class="wotd-phonetic">' + w.phonetic + ' 🔊</div>' +
+    '<div class="wotd-label">📅 Palabra del día</div>' +
+    '<div class="wotd-word">' + w.en + ' 🔊</div>' +
+    '<div class="wotd-phonetic">' + w.phonetic + '</div>' +
     '<div class="wotd-meaning">' + w.es + '</div>' +
-    '<div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:6px;font-style:italic">"' + w.ex + '"</div></div>';
+    '<div class="wotd-example">"' + w.ex + '"</div></div>';
 }
 
 // ============================================
