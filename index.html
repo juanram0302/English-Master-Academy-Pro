@@ -980,6 +980,48 @@
     }
     .trial-days { font-size: 2rem; font-weight: 900; color: #f59e0b; }
     .trial-text { color: #fef3c7; font-size: 0.9rem; }
+
+    /* Level Quiz System */
+    .level-quiz-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 99998; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.3s; }
+    .level-quiz-container { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 24px; padding: 28px; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .level-quiz-header { text-align: center; margin-bottom: 24px; }
+    .level-quiz-header h2 { color: white; font-size: 1.4rem; margin-bottom: 8px; }
+    .level-quiz-header p { color: #a5b4fc; font-size: 0.9rem; }
+    .lq-progress { display: flex; gap: 4px; justify-content: center; margin-bottom: 20px; }
+    .lq-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: all 0.3s; }
+    .lq-dot.current { background: var(--primary); transform: scale(1.3); }
+    .lq-dot.correct { background: var(--success); }
+    .lq-dot.incorrect { background: var(--danger); }
+    .lq-question { color: white; font-size: 1.15rem; font-weight: 600; text-align: center; margin-bottom: 20px; line-height: 1.5; }
+    .lq-question-type { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; margin-bottom: 12px; }
+    .lq-options { display: grid; gap: 10px; }
+    .lq-option { padding: 14px 18px; border-radius: 14px; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.12); color: white; cursor: pointer; transition: all 0.3s; font-size: 0.95rem; text-align: left; }
+    .lq-option:hover { background: rgba(255,255,255,0.15); border-color: var(--primary); }
+    .lq-option.correct-answer { border-color: var(--success) !important; background: rgba(16,185,129,0.25) !important; }
+    .lq-option.wrong-answer { border-color: var(--danger) !important; background: rgba(239,68,68,0.2) !important; }
+    .lq-score-bar { width: 100%; height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 16px 0; }
+    .lq-score-fill { height: 100%; border-radius: 10px; transition: width 1s ease; }
+
+
+    /* Word of the Day */
+    .wotd-banner { background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
+    .wotd-banner:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.4); }
+    .wotd-word { font-size: 1.5rem; font-weight: 900; color: white; }
+    .wotd-phonetic { font-size: 0.85rem; color: rgba(255,255,255,0.7); font-style: italic; }
+    .wotd-meaning { font-size: 0.95rem; color: rgba(255,255,255,0.9); margin-top: 4px; }
+    .wotd-label { position: absolute; top: 12px; right: 16px; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; color: white; }
+    /* Achievement Badges */
+    .achievement-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.1); margin: 2px; }
+    .badges-row { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin: 8px 0; }
+    /* Flashcard */
+    .flashcard-container { perspective: 1000px; width: 100%; max-width: 350px; height: 220px; margin: 20px auto; cursor: pointer; }
+    .flashcard-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+    .flashcard-container.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+    .flashcard-front { background: linear-gradient(135deg, #1e1b4b, #312e81); border: 2px solid rgba(99,102,241,0.3); }
+    .flashcard-back { background: linear-gradient(135deg, #064e3b, #065f46); border: 2px solid rgba(16,185,129,0.3); transform: rotateY(180deg); }
+
+
   </style>
 <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -1246,12 +1288,12 @@
     </div>
 
     <div class="level-selector">
-      <button class="level-btn a1 active" onclick="setLevel('A1')" title="Principiante">A1</button>
-      <button class="level-btn a2" onclick="setLevel('A2')" title="Elemental">A2</button>
-      <button class="level-btn b1" onclick="setLevel('B1')" title="Intermedio">B1</button>
-      <button class="level-btn b2" onclick="setLevel('B2')" title="Intermedio Alto">B2</button>
-      <button class="level-btn c1" onclick="setLevel('C1')" title="Avanzado">C1</button>
-      <button class="level-btn c2" onclick="setLevel('C2')" title="Maestría">C2</button>
+      <button class="level-btn a1 active" onclick="setLevel('A1')" title="Principiante" id="lvlbtn-A1">A1</button>
+      <button class="level-btn a2" onclick="setLevel('A2')" title="Elemental" id="lvlbtn-A2">A2</button>
+      <button class="level-btn b1" onclick="setLevel('B1')" title="Intermedio" id="lvlbtn-B1">B1</button>
+      <button class="level-btn b2" onclick="setLevel('B2')" title="Intermedio Alto" id="lvlbtn-B2">B2</button>
+      <button class="level-btn c1" onclick="setLevel('C1')" title="Avanzado" id="lvlbtn-C1">C1</button>
+      <button class="level-btn c2" onclick="setLevel('C2')" title="Maestría" id="lvlbtn-C2">C2</button>
     </div>
 
     <nav class="nav-tabs">
@@ -1341,6 +1383,8 @@
       </div>
       <p style="text-align:center;opacity:0.7;margin-bottom:1rem;">Practica con diálogos reales de situaciones cotidianas y profesionales</p>
       <div class="subtab-container">
+        <button class="subtab" onclick="showConversationLevel('a1')">🟢 A1</button>
+        <button class="subtab" onclick="showConversationLevel('a2')">🟢 A2</button>
         <button class="subtab active" onclick="showConversationLevel('b1')">🟡 B1</button>
         <button class="subtab" onclick="showConversationLevel('b2')">🟠 B2</button>
         <button class="subtab" onclick="showConversationLevel('c1')">🔴 C1</button>
@@ -1357,6 +1401,8 @@
       </div>
       <p style="text-align:center;opacity:0.7;margin-bottom:1rem;">Mejora tu comprensión lectora con textos de diferentes niveles</p>
       <div class="subtab-container">
+        <button class="subtab" onclick="showReadingLevel('a1')">🟢 A1</button>
+        <button class="subtab" onclick="showReadingLevel('a2')">🟢 A2</button>
         <button class="subtab active" onclick="showReadingLevel('b1')">🟡 B1</button>
         <button class="subtab" onclick="showReadingLevel('b2')">🟠 B2</button>
         <button class="subtab" onclick="showReadingLevel('c1')">🔴 C1</button>
@@ -2947,6 +2993,314 @@ const vocabularyDB = {
       {en:'natural disaster',es:'desastre natural',phonetic:'/ˈnætʃərəl dɪˈzæstər/',emoji:'🌪️'},
       {en:'earthquake',es:'terremoto',phonetic:'/ˈɜːrθkweɪk/',emoji:'🌋'}
     ]
+  },
+  greetings_phrases: {
+    icon: '👋', title: 'Saludos', titleEn: 'Greetings & Introductions', level: 'A1',
+    words: [
+      {en:'Hello',es:'Hola',emoji:'👋',phonetic:'/həˈloʊ/'},
+      {en:'Good morning',es:'Buenos días',emoji:'🌅',phonetic:'/ɡʊd ˈmɔːrnɪŋ/'},
+      {en:'Good afternoon',es:'Buenas tardes',emoji:'☀️',phonetic:'/ɡʊd ˌæftərˈnuːn/'},
+      {en:'Good evening',es:'Buenas noches',emoji:'🌆',phonetic:'/ɡʊd ˈiːvnɪŋ/'},
+      {en:'Good night',es:'Buenas noches (despedida)',emoji:'🌙',phonetic:'/ɡʊd naɪt/'},
+      {en:'Goodbye',es:'Adiós',emoji:'👋',phonetic:'/ɡʊdˈbaɪ/'},
+      {en:'See you later',es:'Nos vemos luego',emoji:'🤙',phonetic:'/siː juː ˈleɪtər/'},
+      {en:'See you tomorrow',es:'Nos vemos mañana',emoji:'📅',phonetic:'/siː juː təˈmɒroʊ/'},
+      {en:'Nice to meet you',es:'Mucho gusto',emoji:'🤝',phonetic:'/naɪs tuː miːt juː/'},
+      {en:'How are you?',es:'¿Cómo estás?',emoji:'😊',phonetic:'/haʊ ɑːr juː/'},
+      {en:'I am fine',es:'Estoy bien',emoji:'👍',phonetic:'/aɪ æm faɪn/'},
+      {en:'Thank you',es:'Gracias',emoji:'🙏',phonetic:'/θæŋk juː/'},
+      {en:'You are welcome',es:'De nada',emoji:'😊',phonetic:'/juː ɑːr ˈwelkəm/'},
+      {en:'Please',es:'Por favor',emoji:'🙏',phonetic:'/pliːz/'},
+      {en:'Excuse me',es:'Disculpe',emoji:'🙋',phonetic:'/ɪkˈskjuːz miː/'},
+      {en:'Sorry',es:'Lo siento',emoji:'😔',phonetic:'/ˈsɒri/'},
+      {en:'My name is',es:'Mi nombre es',emoji:'📛',phonetic:'/maɪ neɪm ɪz/'},
+      {en:'Where are you from?',es:'¿De dónde eres?',emoji:'🌍',phonetic:'/wer ɑːr juː frɒm/'},
+      {en:'I am from',es:'Soy de',emoji:'📍',phonetic:'/aɪ æm frɒm/'},
+      {en:'How old are you?',es:'¿Cuántos años tienes?',emoji:'🎂',phonetic:'/haʊ oʊld ɑːr juː/'},
+      {en:'What do you do?',es:'¿A qué te dedicas?',emoji:'💼',phonetic:'/wɒt duː juː duː/'},
+      {en:'I speak English',es:'Hablo inglés',emoji:'🗣️',phonetic:'/aɪ spiːk ˈɪŋɡlɪʃ/'},
+      {en:'I do not understand',es:'No entiendo',emoji:'😕',phonetic:'/aɪ duː nɒt ˌʌndərˈstænd/'},
+      {en:'Can you repeat?',es:'¿Puedes repetir?',emoji:'🔄',phonetic:'/kæn juː rɪˈpiːt/'},
+      {en:'Take care',es:'Cuídate',emoji:'💕',phonetic:'/teɪk ker/'}
+    ]
+  },
+  daily_routines: {
+    icon: '⏰', title: 'Rutinas Diarias', titleEn: 'Daily Routines', level: 'A1',
+    words: [
+      {en:'Wake up',es:'Despertarse',emoji:'⏰',phonetic:'/weɪk ʌp/'},
+      {en:'Get up',es:'Levantarse',emoji:'🛏️',phonetic:'/ɡet ʌp/'},
+      {en:'Brush teeth',es:'Cepillarse los dientes',emoji:'🪥',phonetic:'/brʌʃ tiːθ/'},
+      {en:'Take a shower',es:'Ducharse',emoji:'🚿',phonetic:'/teɪk ə ˈʃaʊər/'},
+      {en:'Get dressed',es:'Vestirse',emoji:'👔',phonetic:'/ɡet drest/'},
+      {en:'Have breakfast',es:'Desayunar',emoji:'🥣',phonetic:'/hæv ˈbrekfəst/'},
+      {en:'Go to work',es:'Ir al trabajo',emoji:'🏢',phonetic:'/ɡoʊ tuː wɜːrk/'},
+      {en:'Go to school',es:'Ir a la escuela',emoji:'🏫',phonetic:'/ɡoʊ tuː skuːl/'},
+      {en:'Have lunch',es:'Almorzar',emoji:'🍽️',phonetic:'/hæv lʌntʃ/'},
+      {en:'Come home',es:'Llegar a casa',emoji:'🏠',phonetic:'/kʌm hoʊm/'},
+      {en:'Cook dinner',es:'Cocinar la cena',emoji:'🍳',phonetic:'/kʊk ˈdɪnər/'},
+      {en:'Watch TV',es:'Ver televisión',emoji:'📺',phonetic:'/wɒtʃ tiːˈviː/'},
+      {en:'Do homework',es:'Hacer tarea',emoji:'📚',phonetic:'/duː ˈhoʊmwɜːrk/'},
+      {en:'Read a book',es:'Leer un libro',emoji:'📖',phonetic:'/riːd ə bʊk/'},
+      {en:'Go to bed',es:'Ir a la cama',emoji:'😴',phonetic:'/ɡoʊ tuː bed/'},
+      {en:'Fall asleep',es:'Quedarse dormido',emoji:'💤',phonetic:'/fɔːl əˈsliːp/'},
+      {en:'Exercise',es:'Hacer ejercicio',emoji:'🏋️',phonetic:'/ˈeksərsaɪz/'},
+      {en:'Walk the dog',es:'Pasear al perro',emoji:'🐕',phonetic:'/wɔːk ðə dɒɡ/'},
+      {en:'Clean the house',es:'Limpiar la casa',emoji:'🧹',phonetic:'/kliːn ðə haʊs/'},
+      {en:'Do laundry',es:'Lavar la ropa',emoji:'🧺',phonetic:'/duː ˈlɔːndri/'},
+      {en:'Take a nap',es:'Tomar una siesta',emoji:'😴',phonetic:'/teɪk ə næp/'},
+      {en:'Check email',es:'Revisar el correo',emoji:'📧',phonetic:'/tʃek ˈiːmeɪl/'},
+      {en:'Drive to work',es:'Manejar al trabajo',emoji:'🚗',phonetic:'/draɪv tuː wɜːrk/'},
+      {en:'Pick up kids',es:'Recoger a los niños',emoji:'👨‍👧‍👦',phonetic:'/pɪk ʌp kɪdz/'}
+    ]
+  },
+  restaurant: {
+    icon: '🍽️', title: 'En el Restaurante', titleEn: 'At the Restaurant', level: 'A2',
+    words: [
+      {en:'Menu',es:'Menú',emoji:'📋',phonetic:'/ˈmenjuː/'},
+      {en:'Waiter',es:'Mesero',emoji:'🤵',phonetic:'/ˈweɪtər/'},
+      {en:'Waitress',es:'Mesera',emoji:'👩‍🍳',phonetic:'/ˈweɪtrəs/'},
+      {en:'Table',es:'Mesa',emoji:'🪑',phonetic:'/ˈteɪbəl/'},
+      {en:'Reservation',es:'Reservación',emoji:'📝',phonetic:'/ˌrezərˈveɪʃən/'},
+      {en:'Order',es:'Ordenar/Pedido',emoji:'📋',phonetic:'/ˈɔːrdər/'},
+      {en:'Appetizer',es:'Entrada/Aperitivo',emoji:'🥗',phonetic:'/ˈæpɪtaɪzər/'},
+      {en:'Main course',es:'Plato principal',emoji:'🍛',phonetic:'/meɪn kɔːrs/'},
+      {en:'Dessert',es:'Postre',emoji:'🍰',phonetic:'/dɪˈzɜːrt/'},
+      {en:'Beverage',es:'Bebida',emoji:'🥤',phonetic:'/ˈbevərɪdʒ/'},
+      {en:'Bill',es:'Cuenta',emoji:'🧾',phonetic:'/bɪl/'},
+      {en:'Tip',es:'Propina',emoji:'💵',phonetic:'/tɪp/'},
+      {en:'Spicy',es:'Picante',emoji:'🌶️',phonetic:'/ˈspaɪsi/'},
+      {en:'Delicious',es:'Delicioso',emoji:'😋',phonetic:'/dɪˈlɪʃəs/'},
+      {en:'I would like',es:'Me gustaría',emoji:'🙋',phonetic:'/aɪ wʊd laɪk/'},
+      {en:'Can I have',es:'¿Me puede dar?',emoji:'🤲',phonetic:'/kæn aɪ hæv/'},
+      {en:'The check please',es:'La cuenta por favor',emoji:'💳',phonetic:'/ðə tʃek pliːz/'},
+      {en:'Rare',es:'Poco cocido',emoji:'🥩',phonetic:'/rer/'},
+      {en:'Medium',es:'Término medio',emoji:'🥩',phonetic:'/ˈmiːdiəm/'},
+      {en:'Well done',es:'Bien cocido',emoji:'🥩',phonetic:'/wel dʌn/'},
+      {en:'Takeout',es:'Para llevar',emoji:'🥡',phonetic:'/ˈteɪkaʊt/'},
+      {en:'Allergic',es:'Alérgico',emoji:'⚠️',phonetic:'/əˈlɜːrdʒɪk/'},
+      {en:'Vegetarian',es:'Vegetariano',emoji:'🥬',phonetic:'/ˌvedʒəˈteriən/'},
+      {en:'Gluten free',es:'Sin gluten',emoji:'🌾',phonetic:'/ˈɡluːtən friː/'}
+    ]
+  },
+  shopping: {
+    icon: '🛒', title: 'Compras', titleEn: 'Shopping', level: 'A2',
+    words: [
+      {en:'Store',es:'Tienda',emoji:'🏪',phonetic:'/stɔːr/'},
+      {en:'Shop',es:'Comprar/Tienda',emoji:'🛍️',phonetic:'/ʃɒp/'},
+      {en:'Price',es:'Precio',emoji:'💰',phonetic:'/praɪs/'},
+      {en:'Cheap',es:'Barato',emoji:'👍',phonetic:'/tʃiːp/'},
+      {en:'Expensive',es:'Caro',emoji:'💎',phonetic:'/ɪkˈspensɪv/'},
+      {en:'Discount',es:'Descuento',emoji:'🏷️',phonetic:'/ˈdɪskaʊnt/'},
+      {en:'Sale',es:'Oferta/Venta',emoji:'🔥',phonetic:'/seɪl/'},
+      {en:'Size',es:'Talla/Tamaño',emoji:'📏',phonetic:'/saɪz/'},
+      {en:'Small',es:'Pequeño',emoji:'🔹',phonetic:'/smɔːl/'},
+      {en:'Medium',es:'Mediano',emoji:'🔸',phonetic:'/ˈmiːdiəm/'},
+      {en:'Large',es:'Grande',emoji:'🔶',phonetic:'/lɑːrdʒ/'},
+      {en:'Cash',es:'Efectivo',emoji:'💵',phonetic:'/kæʃ/'},
+      {en:'Credit card',es:'Tarjeta de crédito',emoji:'💳',phonetic:'/ˈkredɪt kɑːrd/'},
+      {en:'Receipt',es:'Recibo',emoji:'🧾',phonetic:'/rɪˈsiːt/'},
+      {en:'Try on',es:'Probarse',emoji:'👗',phonetic:'/traɪ ɒn/'},
+      {en:'Fitting room',es:'Probador',emoji:'🚪',phonetic:'/ˈfɪtɪŋ ruːm/'},
+      {en:'Cashier',es:'Cajero',emoji:'🧑‍💼',phonetic:'/kæˈʃɪr/'},
+      {en:'Bag',es:'Bolsa',emoji:'🛍️',phonetic:'/bæɡ/'},
+      {en:'Return',es:'Devolver',emoji:'↩️',phonetic:'/rɪˈtɜːrn/'},
+      {en:'Exchange',es:'Cambiar',emoji:'🔄',phonetic:'/ɪksˈtʃeɪndʒ/'},
+      {en:'How much?',es:'¿Cuánto cuesta?',emoji:'❓',phonetic:'/haʊ mʌtʃ/'},
+      {en:'Too expensive',es:'Muy caro',emoji:'😬',phonetic:'/tuː ɪkˈspensɪv/'},
+      {en:'Bargain',es:'Ganga',emoji:'🎯',phonetic:'/ˈbɑːrɡən/'},
+      {en:'Sold out',es:'Agotado',emoji:'❌',phonetic:'/soʊld aʊt/'}
+    ]
+  },
+  directions: {
+    icon: '🧭', title: 'Direcciones', titleEn: 'Directions', level: 'A2',
+    words: [
+      {en:'Left',es:'Izquierda',emoji:'⬅️',phonetic:'/left/'},
+      {en:'Right',es:'Derecha',emoji:'➡️',phonetic:'/raɪt/'},
+      {en:'Straight ahead',es:'Todo recto',emoji:'⬆️',phonetic:'/streɪt əˈhed/'},
+      {en:'Turn left',es:'Gira a la izquierda',emoji:'↩️',phonetic:'/tɜːrn left/'},
+      {en:'Turn right',es:'Gira a la derecha',emoji:'↪️',phonetic:'/tɜːrn raɪt/'},
+      {en:'Next to',es:'Al lado de',emoji:'↔️',phonetic:'/nekst tuː/'},
+      {en:'In front of',es:'Enfrente de',emoji:'🔝',phonetic:'/ɪn frʌnt ɒv/'},
+      {en:'Behind',es:'Detrás',emoji:'🔙',phonetic:'/bɪˈhaɪnd/'},
+      {en:'Between',es:'Entre',emoji:'↕️',phonetic:'/bɪˈtwiːn/'},
+      {en:'Corner',es:'Esquina',emoji:'📐',phonetic:'/ˈkɔːrnər/'},
+      {en:'Block',es:'Cuadra',emoji:'🏘️',phonetic:'/blɒk/'},
+      {en:'Traffic light',es:'Semáforo',emoji:'🚦',phonetic:'/ˈtræfɪk laɪt/'},
+      {en:'Crosswalk',es:'Paso peatonal',emoji:'🚶',phonetic:'/ˈkrɒswɔːk/'},
+      {en:'Bridge',es:'Puente',emoji:'🌉',phonetic:'/brɪdʒ/'},
+      {en:'Highway',es:'Autopista',emoji:'🛣️',phonetic:'/ˈhaɪweɪ/'},
+      {en:'Intersection',es:'Intersección',emoji:'✖️',phonetic:'/ˌɪntərˈsekʃən/'},
+      {en:'Near',es:'Cerca',emoji:'📍',phonetic:'/nɪr/'},
+      {en:'Far',es:'Lejos',emoji:'🏔️',phonetic:'/fɑːr/'},
+      {en:'Across from',es:'Enfrente de',emoji:'🔀',phonetic:'/əˈkrɒs frɒm/'},
+      {en:'Around the corner',es:'A la vuelta',emoji:'🔄',phonetic:'/əˈraʊnd ðə ˈkɔːrnər/'}
+    ]
+  },
+  travel: {
+    icon: '✈️', title: 'Viajes', titleEn: 'Travel', level: 'B1',
+    words: [
+      {en:'Airport',es:'Aeropuerto',emoji:'✈️',phonetic:'/ˈerpɔːrt/'},
+      {en:'Flight',es:'Vuelo',emoji:'🛫',phonetic:'/flaɪt/'},
+      {en:'Boarding pass',es:'Pase de abordar',emoji:'🎫',phonetic:'/ˈbɔːrdɪŋ pæs/'},
+      {en:'Passport',es:'Pasaporte',emoji:'🛂',phonetic:'/ˈpæspɔːrt/'},
+      {en:'Luggage',es:'Equipaje',emoji:'🧳',phonetic:'/ˈlʌɡɪdʒ/'},
+      {en:'Suitcase',es:'Maleta',emoji:'💼',phonetic:'/ˈsuːtkeɪs/'},
+      {en:'Hotel',es:'Hotel',emoji:'🏨',phonetic:'/hoʊˈtel/'},
+      {en:'Check in',es:'Registrarse',emoji:'📝',phonetic:'/tʃek ɪn/'},
+      {en:'Check out',es:'Desocupar',emoji:'🔑',phonetic:'/tʃek aʊt/'},
+      {en:'Tourist',es:'Turista',emoji:'📸',phonetic:'/ˈtʊrɪst/'},
+      {en:'Ticket',es:'Boleto',emoji:'🎟️',phonetic:'/ˈtɪkɪt/'},
+      {en:'Round trip',es:'Viaje redondo',emoji:'🔄',phonetic:'/raʊnd trɪp/'},
+      {en:'One way',es:'Solo ida',emoji:'➡️',phonetic:'/wʌn weɪ/'},
+      {en:'Departure',es:'Salida',emoji:'🛫',phonetic:'/dɪˈpɑːrtʃər/'},
+      {en:'Arrival',es:'Llegada',emoji:'🛬',phonetic:'/əˈraɪvəl/'},
+      {en:'Delay',es:'Retraso',emoji:'⏰',phonetic:'/dɪˈleɪ/'},
+      {en:'Gate',es:'Puerta de embarque',emoji:'🚪',phonetic:'/ɡeɪt/'},
+      {en:'Customs',es:'Aduana',emoji:'🛃',phonetic:'/ˈkʌstəmz/'},
+      {en:'Currency exchange',es:'Cambio de moneda',emoji:'💱',phonetic:'/ˈkɜːrənsi ɪksˈtʃeɪndʒ/'},
+      {en:'Map',es:'Mapa',emoji:'🗺️',phonetic:'/mæp/'},
+      {en:'Souvenir',es:'Recuerdo/Souvenir',emoji:'🎁',phonetic:'/ˌsuːvəˈnɪr/'},
+      {en:'Guided tour',es:'Tour guiado',emoji:'🗣️',phonetic:'/ˈɡaɪdɪd tʊr/'},
+      {en:'Itinerary',es:'Itinerario',emoji:'📋',phonetic:'/aɪˈtɪnəreri/'},
+      {en:'Accommodation',es:'Alojamiento',emoji:'🏠',phonetic:'/əˌkɒməˈdeɪʃən/'}
+    ]
+  },
+  work_office: {
+    icon: '💼', title: 'Trabajo y Oficina', titleEn: 'Work & Office', level: 'B1',
+    words: [
+      {en:'Boss',es:'Jefe',emoji:'👔',phonetic:'/bɒs/'},
+      {en:'Employee',es:'Empleado',emoji:'🧑‍💼',phonetic:'/ɪmˈplɔɪiː/'},
+      {en:'Salary',es:'Salario',emoji:'💰',phonetic:'/ˈsæləri/'},
+      {en:'Meeting',es:'Reunión',emoji:'🤝',phonetic:'/ˈmiːtɪŋ/'},
+      {en:'Deadline',es:'Fecha límite',emoji:'⏰',phonetic:'/ˈdedlaɪn/'},
+      {en:'Interview',es:'Entrevista',emoji:'🎤',phonetic:'/ˈɪntərvjuː/'},
+      {en:'Resume',es:'Currículum',emoji:'📄',phonetic:'/rɪˈzjuːm/'},
+      {en:'Promotion',es:'Ascenso',emoji:'📈',phonetic:'/prəˈmoʊʃən/'},
+      {en:'Fired',es:'Despedido',emoji:'❌',phonetic:'/faɪərd/'},
+      {en:'Hired',es:'Contratado',emoji:'✅',phonetic:'/haɪərd/'},
+      {en:'Office',es:'Oficina',emoji:'🏢',phonetic:'/ˈɒfɪs/'},
+      {en:'Colleague',es:'Colega',emoji:'👥',phonetic:'/ˈkɒliːɡ/'},
+      {en:'Department',es:'Departamento',emoji:'🏛️',phonetic:'/dɪˈpɑːrtmənt/'},
+      {en:'Schedule',es:'Horario',emoji:'📅',phonetic:'/ˈskedʒuːl/'},
+      {en:'Overtime',es:'Horas extra',emoji:'⏱️',phonetic:'/ˈoʊvərtaɪm/'},
+      {en:'Vacation',es:'Vacaciones',emoji:'🏖️',phonetic:'/veɪˈkeɪʃən/'},
+      {en:'Sick leave',es:'Licencia médica',emoji:'🤒',phonetic:'/sɪk liːv/'},
+      {en:'Report',es:'Informe',emoji:'📊',phonetic:'/rɪˈpɔːrt/'},
+      {en:'Presentation',es:'Presentación',emoji:'📽️',phonetic:'/ˌprezənˈteɪʃən/'},
+      {en:'Project',es:'Proyecto',emoji:'📁',phonetic:'/ˈprɒdʒekt/'},
+      {en:'Client',es:'Cliente',emoji:'🤝',phonetic:'/ˈklaɪənt/'},
+      {en:'Contract',es:'Contrato',emoji:'📝',phonetic:'/ˈkɒntrækt/'},
+      {en:'Teamwork',es:'Trabajo en equipo',emoji:'👥',phonetic:'/ˈtiːmwɜːrk/'},
+      {en:'Feedback',es:'Retroalimentación',emoji:'💬',phonetic:'/ˈfiːdbæk/'}
+    ]
+  },
+  relationships: {
+    icon: '❤️', title: 'Relaciones', titleEn: 'Relationships', level: 'B1',
+    words: [
+      {en:'Friend',es:'Amigo',emoji:'👫',phonetic:'/frend/'},
+      {en:'Best friend',es:'Mejor amigo',emoji:'👯',phonetic:'/best frend/'},
+      {en:'Boyfriend',es:'Novio',emoji:'👦',phonetic:'/ˈbɔɪfrend/'},
+      {en:'Girlfriend',es:'Novia',emoji:'👧',phonetic:'/ˈɡɜːrlfrend/'},
+      {en:'Partner',es:'Pareja',emoji:'💑',phonetic:'/ˈpɑːrtnər/'},
+      {en:'Married',es:'Casado',emoji:'💍',phonetic:'/ˈmærid/'},
+      {en:'Single',es:'Soltero',emoji:'🙋',phonetic:'/ˈsɪŋɡəl/'},
+      {en:'Divorced',es:'Divorciado',emoji:'💔',phonetic:'/dɪˈvɔːrst/'},
+      {en:'Engaged',es:'Comprometido',emoji:'💍',phonetic:'/ɪnˈɡeɪdʒd/'},
+      {en:'Wedding',es:'Boda',emoji:'👰',phonetic:'/ˈwedɪŋ/'},
+      {en:'Love',es:'Amor',emoji:'❤️',phonetic:'/lʌv/'},
+      {en:'Trust',es:'Confianza',emoji:'🤝',phonetic:'/trʌst/'},
+      {en:'Respect',es:'Respeto',emoji:'🙏',phonetic:'/rɪˈspekt/'},
+      {en:'Argument',es:'Discusión',emoji:'😤',phonetic:'/ˈɑːrɡjumənt/'},
+      {en:'Forgive',es:'Perdonar',emoji:'🕊️',phonetic:'/fərˈɡɪv/'},
+      {en:'Neighbor',es:'Vecino',emoji:'🏘️',phonetic:'/ˈneɪbər/'},
+      {en:'Acquaintance',es:'Conocido',emoji:'🤷',phonetic:'/əˈkweɪntəns/'},
+      {en:'Roommate',es:'Compañero de cuarto',emoji:'🏠',phonetic:'/ˈruːmmeɪt/'},
+      {en:'Date',es:'Cita',emoji:'🌹',phonetic:'/deɪt/'},
+      {en:'Break up',es:'Terminar relación',emoji:'💔',phonetic:'/breɪk ʌp/'}
+    ]
+  },
+  finance: {
+    icon: '💰', title: 'Finanzas', titleEn: 'Finance & Money', level: 'B2',
+    words: [
+      {en:'Account',es:'Cuenta',emoji:'🏦',phonetic:'/əˈkaʊnt/'},
+      {en:'Savings',es:'Ahorros',emoji:'🐷',phonetic:'/ˈseɪvɪŋz/'},
+      {en:'Investment',es:'Inversión',emoji:'📈',phonetic:'/ɪnˈvestmənt/'},
+      {en:'Loan',es:'Préstamo',emoji:'🏦',phonetic:'/loʊn/'},
+      {en:'Mortgage',es:'Hipoteca',emoji:'🏠',phonetic:'/ˈmɔːrɡɪdʒ/'},
+      {en:'Debt',es:'Deuda',emoji:'💳',phonetic:'/det/'},
+      {en:'Budget',es:'Presupuesto',emoji:'📊',phonetic:'/ˈbʌdʒɪt/'},
+      {en:'Tax',es:'Impuesto',emoji:'🏛️',phonetic:'/tæks/'},
+      {en:'Income',es:'Ingreso',emoji:'💵',phonetic:'/ˈɪnkʌm/'},
+      {en:'Expense',es:'Gasto',emoji:'💸',phonetic:'/ɪkˈspens/'},
+      {en:'Profit',es:'Ganancia',emoji:'📈',phonetic:'/ˈprɒfɪt/'},
+      {en:'Loss',es:'Pérdida',emoji:'📉',phonetic:'/lɒs/'},
+      {en:'Interest rate',es:'Tasa de interés',emoji:'📊',phonetic:'/ˈɪntrəst reɪt/'},
+      {en:'Stock market',es:'Bolsa de valores',emoji:'📊',phonetic:'/stɒk ˈmɑːrkɪt/'},
+      {en:'Inflation',es:'Inflación',emoji:'📈',phonetic:'/ɪnˈfleɪʃən/'},
+      {en:'Currency',es:'Moneda',emoji:'💱',phonetic:'/ˈkɜːrənsi/'},
+      {en:'Wire transfer',es:'Transferencia',emoji:'🔄',phonetic:'/waɪər ˈtrænsfɜːr/'},
+      {en:'Withdraw',es:'Retirar',emoji:'🏧',phonetic:'/wɪðˈdrɔː/'},
+      {en:'Deposit',es:'Depositar',emoji:'💰',phonetic:'/dɪˈpɒzɪt/'},
+      {en:'Bankruptcy',es:'Bancarrota',emoji:'📉',phonetic:'/ˈbæŋkrʌptsi/'},
+      {en:'Insurance',es:'Seguro',emoji:'🛡️',phonetic:'/ɪnˈʃʊrəns/'},
+      {en:'Retirement',es:'Jubilación',emoji:'👴',phonetic:'/rɪˈtaɪərmənt/'},
+      {en:'Entrepreneur',es:'Emprendedor',emoji:'🚀',phonetic:'/ˌɒntrəprəˈnɜːr/'},
+      {en:'Revenue',es:'Ingresos',emoji:'💰',phonetic:'/ˈrevənjuː/'}
+    ]
+  },
+  art_culture: {
+    icon: '🎨', title: 'Arte y Cultura', titleEn: 'Art & Culture', level: 'C1',
+    words: [
+      {en:'Painting',es:'Pintura',emoji:'🖼️',phonetic:'/ˈpeɪntɪŋ/'},
+      {en:'Sculpture',es:'Escultura',emoji:'🗿',phonetic:'/ˈskʌlptʃər/'},
+      {en:'Exhibition',es:'Exhibición',emoji:'🏛️',phonetic:'/ˌeksɪˈbɪʃən/'},
+      {en:'Gallery',es:'Galería',emoji:'🖼️',phonetic:'/ˈɡæləri/'},
+      {en:'Museum',es:'Museo',emoji:'🏛️',phonetic:'/mjuˈziːəm/'},
+      {en:'Performance',es:'Actuación',emoji:'🎭',phonetic:'/pərˈfɔːrməns/'},
+      {en:'Orchestra',es:'Orquesta',emoji:'🎻',phonetic:'/ˈɔːrkɪstrə/'},
+      {en:'Masterpiece',es:'Obra maestra',emoji:'🏆',phonetic:'/ˈmæstərpiːs/'},
+      {en:'Contemporary',es:'Contemporáneo',emoji:'🆕',phonetic:'/kənˈtempəreri/'},
+      {en:'Abstract',es:'Abstracto',emoji:'🎨',phonetic:'/ˈæbstrækt/'},
+      {en:'Heritage',es:'Patrimonio',emoji:'🏛️',phonetic:'/ˈherɪtɪdʒ/'},
+      {en:'Tradition',es:'Tradición',emoji:'📜',phonetic:'/trəˈdɪʃən/'},
+      {en:'Festival',es:'Festival',emoji:'🎉',phonetic:'/ˈfestɪvəl/'},
+      {en:'Lyrics',es:'Letra (canción)',emoji:'🎵',phonetic:'/ˈlɪrɪks/'},
+      {en:'Choreography',es:'Coreografía',emoji:'💃',phonetic:'/ˌkɒriˈɒɡrəfi/'},
+      {en:'Manuscript',es:'Manuscrito',emoji:'📜',phonetic:'/ˈmænjuskrɪpt/'},
+      {en:'Aesthetic',es:'Estético',emoji:'✨',phonetic:'/esˈθetɪk/'},
+      {en:'Avant-garde',es:'Vanguardia',emoji:'🔮',phonetic:'/ˌævɒ̃ˈɡɑːrd/'},
+      {en:'Renaissance',es:'Renacimiento',emoji:'🎨',phonetic:'/ˌrenəˈsɑːns/'},
+      {en:'Genre',es:'Género',emoji:'📚',phonetic:'/ˈʒɒnrə/'}
+    ]
+  },
+  sophisticated_vocab: {
+    icon: '🎩', title: 'Vocabulario Sofisticado', titleEn: 'Sophisticated Vocabulary', level: 'C2',
+    words: [
+      {en:'Eloquent',es:'Elocuente',emoji:'🗣️',phonetic:'/ˈeləkwənt/'},
+      {en:'Meticulous',es:'Meticuloso',emoji:'🔍',phonetic:'/məˈtɪkjələs/'},
+      {en:'Benevolent',es:'Benévolo',emoji:'😇',phonetic:'/bəˈnevələnt/'},
+      {en:'Ambiguous',es:'Ambiguo',emoji:'🤔',phonetic:'/æmˈbɪɡjuəs/'},
+      {en:'Ubiquitous',es:'Omnipresente',emoji:'🌐',phonetic:'/juːˈbɪkwɪtəs/'},
+      {en:'Ephemeral',es:'Efímero',emoji:'🦋',phonetic:'/ɪˈfemərəl/'},
+      {en:'Pragmatic',es:'Pragmático',emoji:'🎯',phonetic:'/præɡˈmætɪk/'},
+      {en:'Tenacious',es:'Tenaz',emoji:'💪',phonetic:'/təˈneɪʃəs/'},
+      {en:'Serendipity',es:'Serendipia',emoji:'🍀',phonetic:'/ˌserənˈdɪpɪti/'},
+      {en:'Resilient',es:'Resiliente',emoji:'🌱',phonetic:'/rɪˈzɪliənt/'},
+      {en:'Clandestine',es:'Clandestino',emoji:'🕵️',phonetic:'/klænˈdestɪn/'},
+      {en:'Paradigm',es:'Paradigma',emoji:'💡',phonetic:'/ˈpærədaɪm/'},
+      {en:'Unprecedented',es:'Sin precedentes',emoji:'🆕',phonetic:'/ʌnˈpresɪdentɪd/'},
+      {en:'Conundrum',es:'Dilema',emoji:'🤯',phonetic:'/kəˈnʌndrəm/'},
+      {en:'Quintessential',es:'Quintaesencial',emoji:'⭐',phonetic:'/ˌkwɪntɪˈsenʃəl/'},
+      {en:'Juxtaposition',es:'Yuxtaposición',emoji:'↔️',phonetic:'/ˌdʒʌkstəpəˈzɪʃən/'},
+      {en:'Metamorphosis',es:'Metamorfosis',emoji:'🦋',phonetic:'/ˌmetəˈmɔːrfəsɪs/'},
+      {en:'Nomenclature',es:'Nomenclatura',emoji:'📖',phonetic:'/ˈnoʊmənkleɪtʃər/'},
+      {en:'Surreptitious',es:'Subrepticio',emoji:'🤫',phonetic:'/ˌsɜːrəpˈtɪʃəs/'},
+      {en:'Verisimilitude',es:'Verosimilitud',emoji:'🎭',phonetic:'/ˌverɪsɪˈmɪlɪtjuːd/'},
+      {en:'Magnanimous',es:'Magnánimo',emoji:'👑',phonetic:'/mæɡˈnænɪməs/'},
+      {en:'Inexorable',es:'Inexorable',emoji:'⏳',phonetic:'/ɪnˈeksərəbəl/'},
+      {en:'Perspicacious',es:'Perspicaz',emoji:'🧠',phonetic:'/ˌpɜːrspɪˈkeɪʃəs/'},
+      {en:'Recalcitrant',es:'Recalcitrante',emoji:'😤',phonetic:'/rɪˈkælsɪtrənt/'}
+    ]
   }
 };
 
@@ -3937,6 +4291,81 @@ const phrasesDB = {
 // CONVERSATIONS DATABASE (Diálogos)
 // ============================================
 const conversationsDB = {
+  a1: [
+    {id:'a1_introduce',title:'Meeting Someone New',situation:'Conociendo a alguien nuevo',dialogue:[
+      {speaker:'Anna',text:"Hi! My name is Anna.",translation:"¡Hola! Mi nombre es Anna."},
+      {speaker:'Carlos',text:"Hello Anna! I'm Carlos. Nice to meet you.",translation:"¡Hola Anna! Soy Carlos. Mucho gusto."},
+      {speaker:'Anna',text:"Nice to meet you too! Where are you from?",translation:"¡Mucho gusto también! ¿De dónde eres?"},
+      {speaker:'Carlos',text:"I'm from Mexico. And you?",translation:"Soy de México. ¿Y tú?"},
+      {speaker:'Anna',text:"I'm from the United States. I live in New York.",translation:"Soy de EE.UU. Vivo en Nueva York."},
+      {speaker:'Carlos',text:"Wow! New York is a big city.",translation:"¡Wow! Nueva York es una ciudad grande."},
+      {speaker:'Anna',text:"Yes! Do you speak English?",translation:"¡Sí! ¿Hablas inglés?"},
+      {speaker:'Carlos',text:"A little. I am learning.",translation:"Un poco. Estoy aprendiendo."}
+    ]},
+    {id:'a1_store',title:'At the Store',situation:'En la tienda',dialogue:[
+      {speaker:'Customer',text:"Excuse me, how much is this?",translation:"Disculpe, ¿cuánto cuesta esto?"},
+      {speaker:'Clerk',text:"It is five dollars.",translation:"Son cinco dólares."},
+      {speaker:'Customer',text:"OK, I want two, please.",translation:"OK, quiero dos, por favor."},
+      {speaker:'Clerk',text:"That is ten dollars total.",translation:"Son diez dólares en total."},
+      {speaker:'Customer',text:"Here you go. Thank you!",translation:"Aquí tiene. ¡Gracias!"},
+      {speaker:'Clerk',text:"Thank you! Have a nice day.",translation:"¡Gracias! Que tenga un buen día."}
+    ]},
+    {id:'a1_family',title:'Talking About Family',situation:'Hablando de la familia',dialogue:[
+      {speaker:'Tom',text:"Do you have brothers or sisters?",translation:"¿Tienes hermanos o hermanas?"},
+      {speaker:'Maria',text:"Yes! I have one brother and two sisters.",translation:"¡Sí! Tengo un hermano y dos hermanas."},
+      {speaker:'Tom',text:"How old is your brother?",translation:"¿Cuántos años tiene tu hermano?"},
+      {speaker:'Maria',text:"He is 20 years old. He is a student.",translation:"Tiene 20 años. Es estudiante."},
+      {speaker:'Tom',text:"And your sisters?",translation:"¿Y tus hermanas?"},
+      {speaker:'Maria',text:"They are 15 and 10. They go to school.",translation:"Tienen 15 y 10. Van a la escuela."},
+      {speaker:'Tom',text:"I am an only child.",translation:"Yo soy hijo único."}
+    ]},
+    {id:'a1_weather',title:'The Weather Today',situation:'El clima de hoy',dialogue:[
+      {speaker:'Lisa',text:"Good morning! How is the weather?",translation:"¡Buenos días! ¿Cómo está el clima?"},
+      {speaker:'John',text:"It is sunny and warm today.",translation:"Hoy está soleado y cálido."},
+      {speaker:'Lisa',text:"Great! I want to go to the park.",translation:"¡Genial! Quiero ir al parque."},
+      {speaker:'John',text:"Good idea! Do you have sunglasses?",translation:"¡Buena idea! ¿Tienes lentes de sol?"},
+      {speaker:'Lisa',text:"Yes I do. Let's go!",translation:"Sí tengo. ¡Vamos!"}
+    ]}
+  ],
+  a2: [
+    {id:'a2_restaurant',title:'Ordering Food',situation:'Pidiendo comida en restaurante',dialogue:[
+      {speaker:'Waiter',text:"Good evening! Table for two?",translation:"¡Buenas noches! ¿Mesa para dos?"},
+      {speaker:'Customer',text:"Yes please. Can we see the menu?",translation:"Sí por favor. ¿Podemos ver el menú?"},
+      {speaker:'Waiter',text:"Of course! What do you recommend?",translation:"¡Por supuesto!"},
+      {speaker:'Customer',text:"What do you recommend?",translation:"¿Qué nos recomienda?"},
+      {speaker:'Waiter',text:"The pasta is very popular today.",translation:"La pasta es muy popular hoy."},
+      {speaker:'Customer',text:"I'll have the pasta and a glass of water.",translation:"Tomaré la pasta y un vaso de agua."},
+      {speaker:'Waiter',text:"Excellent! And for your friend?",translation:"¡Excelente! ¿Y para su amigo?"},
+      {speaker:'Customer 2',text:"I'd like the fish and a lemonade.",translation:"Me gustaría el pescado y una limonada."},
+      {speaker:'Waiter',text:"Your food will be ready in 15 minutes.",translation:"Su comida estará lista en 15 minutos."}
+    ]},
+    {id:'a2_directions',title:'Asking for Directions',situation:'Pidiendo direcciones',dialogue:[
+      {speaker:'Tourist',text:"Excuse me, where is the museum?",translation:"Disculpe, ¿dónde está el museo?"},
+      {speaker:'Local',text:"Go straight for two blocks.",translation:"Ve derecho dos cuadras."},
+      {speaker:'Tourist',text:"Then what?",translation:"¿Y luego?"},
+      {speaker:'Local',text:"Turn left at the traffic light.",translation:"Gira a la izquierda en el semáforo."},
+      {speaker:'Tourist',text:"How long does it take?",translation:"¿Cuánto tarda?"},
+      {speaker:'Local',text:"About 10 minutes walking. Enjoy!",translation:"Unos 10 minutos caminando. ¡Disfruta!"}
+    ]},
+    {id:'a2_doctor',title:'At the Doctor',situation:'En el doctor',dialogue:[
+      {speaker:'Doctor',text:"Hello! What's the problem today?",translation:"¡Hola! ¿Cuál es el problema hoy?"},
+      {speaker:'Patient',text:"I have a headache and sore throat.",translation:"Tengo dolor de cabeza y de garganta."},
+      {speaker:'Doctor',text:"How long have you had these symptoms?",translation:"¿Cuánto tiempo has tenido estos síntomas?"},
+      {speaker:'Patient',text:"Since yesterday morning.",translation:"Desde ayer en la mañana."},
+      {speaker:'Doctor',text:"Do you have a fever?",translation:"¿Tienes fiebre?"},
+      {speaker:'Patient',text:"Yes, I think so.",translation:"Sí, creo que sí."},
+      {speaker:'Doctor',text:"It's probably the flu. Rest and drink water.",translation:"Probablemente es gripe. Descansa y toma agua."}
+    ]},
+    {id:'a2_shopping',title:'Going Shopping',situation:'De compras',dialogue:[
+      {speaker:'Customer',text:"Hi, I'm looking for a blue shirt.",translation:"Hola, busco una camisa azul."},
+      {speaker:'Clerk',text:"What size do you need?",translation:"¿Qué talla necesita?"},
+      {speaker:'Customer',text:"Medium, please.",translation:"Mediana, por favor."},
+      {speaker:'Clerk',text:"This one is $25 and this one is $40.",translation:"Esta es $25 y esta $40."},
+      {speaker:'Customer',text:"Can I try the $40 one?",translation:"¿Puedo probarme la de $40?"},
+      {speaker:'Clerk',text:"The fitting room is over there.",translation:"El probador está por allá."},
+      {speaker:'Customer',text:"It fits! I'll take it.",translation:"¡Me queda! Me la llevo."}
+    ]}
+  ],
   b1: [
     {
       id: 'b1_restaurant',
@@ -4251,6 +4680,34 @@ const conversationsDB = {
 // READING TEXTS DATABASE (Lecturas)
 // ============================================
 const readingsDB = {
+  a1: [
+    {id:'a1_myday',title:'My Day',titleEs:'Mi Día',level:'A1',wordCount:80,
+     text:"My name is Maria. I wake up at 7 o'clock. I brush my teeth and take a shower. Then I have breakfast. I eat bread and drink coffee.\n\nI go to work at 8:30. I work in an office. I like my job. I have lunch at 12:00. I eat a sandwich and an apple.\n\nI come home at 6:00. I cook dinner. I watch TV and read a book. I go to bed at 10:00.",
+     vocabulary:['wake up','brush','shower','breakfast','lunch','dinner','office','sandwich'],
+     questions:[{q:'What time does Maria wake up?',options:['6','7','8','9'],correct:1},{q:'Where does she work?',options:['School','Hospital','Office','Store'],correct:2},{q:'What does she eat for lunch?',options:['Pizza','Sandwich','Pasta','Rice'],correct:1}]},
+    {id:'a1_family2',title:'My Family',titleEs:'Mi Familia',level:'A1',wordCount:90,
+     text:"I have a big family. My father is David. He is 50. He is a teacher. My mother is Rosa. She is 48. She is a doctor.\n\nI have one brother Pedro. He is 22 and tall. My sister Ana is 16. She likes music.\n\nWe have a dog Max. He is small and brown. I love my family!",
+     vocabulary:['father','mother','brother','sister','tall','teacher','doctor','love'],
+     questions:[{q:'How old is the father?',options:['45','48','50','52'],correct:2},{q:'What is the mother?',options:['Teacher','Doctor','Nurse','Cook'],correct:1},{q:'What is the dog name?',options:['Rex','Max','Buddy','Rocky'],correct:1}]},
+    {id:'a1_house',title:'My House',titleEs:'Mi Casa',level:'A1',wordCount:85,
+     text:"My house is small but beautiful. It has three bedrooms, one bathroom, a kitchen, and a living room.\n\nThe kitchen is my favorite room. There is a big table with four chairs. My bedroom has a bed, a desk, and a window. I can see the garden. There are red and yellow flowers.\n\nI am happy in my house.",
+     vocabulary:['bedroom','bathroom','kitchen','table','chair','desk','garden','flowers'],
+     questions:[{q:'How many bedrooms?',options:['One','Two','Three','Four'],correct:2},{q:'Favorite room?',options:['Bedroom','Kitchen','Living room','Bathroom'],correct:1},{q:'Flower colors?',options:['Blue/white','Red/yellow','Pink/green','Purple'],correct:1}]}
+  ],
+  a2: [
+    {id:'a2_vacation',title:'My Last Vacation',titleEs:'Mis Últimas Vacaciones',level:'A2',wordCount:120,
+     text:"Last summer, I went to the beach with my family. We stayed in a small hotel near the ocean.\n\nEvery morning, we had breakfast at the hotel. Then we went to the beach. I swam in the ocean and played volleyball. My brother made sandcastles.\n\nIn the afternoon, we visited the town and ate at restaurants. I tried seafood for the first time. It was delicious!\n\nOne day, we took a boat trip and saw dolphins! It was amazing. I took many photos. I want to go back next year!",
+     vocabulary:['vacation','beach','hotel','ocean','swam','sandcastle','restaurant','dolphins'],
+     questions:[{q:'Where did they go?',options:['Mountains','Beach','City','Forest'],correct:1},{q:'What did the brother do?',options:['Swam','Read','Sandcastles','Volleyball'],correct:2},{q:'What animals did they see?',options:['Whales','Fish','Dolphins','Turtles'],correct:2}]},
+    {id:'a2_school',title:'My School Day',titleEs:'Mi Día Escolar',level:'A2',wordCount:130,
+     text:"I am a student at Lincoln High School. I wake up at 6:30 and take the bus at 7:15.\n\nMy first class is Math. I don't really like Math, but my teacher is nice. After Math, I have English. English is my favorite because I love learning new words.\n\nAt 12:00, I have lunch with friends in the cafeteria. In the afternoon, I have Science and History. After school, I play soccer until 5:00.\n\nI get home at 5:30, do homework, have dinner, and go to bed at 10:00.",
+     vocabulary:['student','class','subject','cafeteria','experiment','homework','teammate','schedule'],
+     questions:[{q:'What time is the bus?',options:['6:30','7:00','7:15','7:30'],correct:2},{q:'Favorite subject?',options:['Math','English','Science','History'],correct:1},{q:'What sport?',options:['Basketball','Baseball','Tennis','Soccer'],correct:3}]},
+    {id:'a2_cooking',title:'Learning to Cook',titleEs:'Aprendiendo a Cocinar',level:'A2',wordCount:115,
+     text:"Last weekend, my grandmother taught me to cook her famous chicken soup. We went to the supermarket for ingredients: chicken, carrots, potatoes, onions, and celery.\n\nShe showed me how to cut vegetables carefully. We put chicken in a big pot with water, salt and pepper. After 30 minutes, we added vegetables.\n\nThe kitchen smelled wonderful! After one hour, the soup was ready. It was delicious! My grandmother said, 'Now you can make it for your family.' I was so proud!",
+     vocabulary:['grandmother','cook','ingredients','vegetables','pot','knife','smell','delicious'],
+     questions:[{q:'Who taught cooking?',options:['Mother','Father','Grandmother','Friend'],correct:2},{q:'What did they cook?',options:['Pizza','Chicken soup','Pasta','Salad'],correct:1},{q:'Wait time after vegetables?',options:['15 min','30 min','45 min','1 hour'],correct:3}]}
+  ],
   b1: [
     {
       id: 'b1_travel',
@@ -4557,14 +5014,15 @@ function renderConversationsList() {
     return;
   }
   
+  var lvlDisplay = currentConversationLevel.toUpperCase();
   let html = '<div class="vocab-grid">';
   conversations.forEach(conv => {
     html += `
       <div class="category-card" onclick="showConversation('${conv.id}')">
-        <span class="category-level" style="background:${getLevelColor(conv.level)}">${conv.level}</span>
+        <span class="category-level" style="background:${getLevelColor(lvlDisplay)}">${lvlDisplay}</span>
         <span class="category-icon">💬</span>
         <div class="category-title">${conv.title}</div>
-        <div class="category-count">${conv.titleEs}</div>
+        <div class="category-count">${conv.situation || ''}</div>
       </div>
     `;
   });
@@ -4620,8 +5078,12 @@ function showConversation(id) {
   detail.innerHTML = `
     <button class="back-btn" onclick="renderConversationsList()">← Volver</button>
     <h3 style="text-align:center;margin:1rem 0;">${conv.title}</h3>
-    <p style="text-align:center;opacity:0.7;margin-bottom:1rem;">${conv.situation}</p>
-    <div class="dialogue-container">
+    <p style="text-align:center;opacity:0.7;margin-bottom:0.5rem;">${conv.situation}</p>
+    <div style="text-align:center;margin-bottom:1rem;">
+      <button onclick="speakConversation()" style="padding:10px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;cursor:pointer;font-weight:600" id="listenConvBtn">🔊 Escuchar conversación</button>
+      <button onclick="stopFullText()" style="padding:10px 16px;border:none;border-radius:12px;background:rgba(239,68,68,0.2);color:#ef4444;cursor:pointer;font-weight:600;margin-left:8px">⏹ Parar</button>
+    </div>
+    <div class="dialogue-container" id="dialogueArea">
       ${dialogueHtml}
     </div>
     <div class="vocab-section">
@@ -4723,8 +5185,12 @@ function showReading(id) {
     <h3 style="text-align:center;margin:1rem 0;">${reading.title}</h3>
     <p style="text-align:center;opacity:0.7;margin-bottom:0.5rem;">${reading.titleEs}</p>
     <p style="text-align:center;opacity:0.5;margin-bottom:1rem;font-size:0.85rem;">📊 ${reading.wordCount} palabras • ${reading.level}</p>
-    <p style="text-align:center;color:#a5b4fc;font-size:0.85rem;margin-bottom:1rem;">💡 Toca cualquier palabra para ver su significado y pronunciación</p>
-    <div class="reading-text">
+    <p style="text-align:center;color:#a5b4fc;font-size:0.85rem;margin-bottom:0.5rem;">💡 Toca cualquier palabra para ver su significado</p>
+    <div style="text-align:center;margin-bottom:1rem;">
+      <button onclick="speakFullText()" style="padding:10px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;cursor:pointer;font-weight:600;font-size:0.95rem" id="listenFullBtn">🔊 Escuchar texto completo</button>
+      <button onclick="stopFullText()" style="padding:10px 16px;border:none;border-radius:12px;background:rgba(239,68,68,0.2);color:#ef4444;cursor:pointer;font-weight:600;margin-left:8px">⏹ Parar</button>
+    </div>
+    <div class="reading-text" id="readingTextArea">
       ${paragraphs}
     </div>
     <div class="vocab-section">
@@ -4749,6 +5215,16 @@ function checkReadAnswer(qIndex, selected, correct) {
 }
 
 function showPanel(panelId) {
+  // CHECK ACCESS
+  if (!isPremium && !isInTrial && !['vocabulary', 'practice'].includes(panelId)) {
+    showAccessDenied();
+    return;
+  }
+  if (panelId === 'phrases' && !['B2', 'C1', 'C2'].includes(currentLevel)) {
+    showToast('💬 Las frases están disponibles desde nivel B2', 'warning');
+    return;
+  }
+  
   currentPanel = panelId;
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -4775,27 +5251,53 @@ function refreshCurrentPanel() {
 // VOCABULARY FUNCTIONS
 // ============================================
 function renderVocabCategories() {
-  const container = document.getElementById('vocab-categories');
-  const content = document.getElementById('vocab-content');
-  container.style.display = 'grid';
-  content.style.display = 'none';
-  currentVocabCategory = null;
-  
-  let html = '';
-  for(const [key, cat] of Object.entries(vocabularyDB)) {
-    html += `
-      <div class="category-card" onclick="showVocabCategory('${key}')">
-        <span class="category-level" style="background:${getLevelColor(cat.level)}">${cat.level}</span>
-        <span class="category-icon">${cat.icon}</span>
-        <div class="category-title">${cat.title}</div>
-        <div class="category-count">${cat.words.length} palabras</div>
-      </div>
-    `;
+  var container = document.getElementById('vocab-categories');
+  var contentDiv = document.getElementById('vocab-content');
+  if (contentDiv) contentDiv.style.display = 'none';
+  if (container) container.style.display = '';
+  var keys = Object.keys(vocabularyDB);
+  var levelKeys = keys.filter(function(k) { return vocabularyDB[k].level === currentLevel; });
+  var levelUnlocked = isPremium || (typeof isLevelUnlocked === 'function' && isLevelUnlocked(currentLevel));
+  var levelPsd = typeof isLevelPassed === 'function' && isLevelPassed(currentLevel);
+  var html = '';
+  var colors = {A1:'#22c55e',A2:'#84cc16',B1:'#eab308',B2:'#f97316',C1:'#ef4444',C2:'#dc2626'};
+
+  // Show locked banner if level not unlocked
+  if (!isPremium && typeof LEVEL_ORDER !== 'undefined' && LEVEL_ORDER.indexOf(currentLevel) > 0 && !levelUnlocked) {
+    var prevLvl = LEVEL_ORDER[LEVEL_ORDER.indexOf(currentLevel) - 1];
+    html += '<div style="text-align:center;padding:20px;background:rgba(239,68,68,0.1);border-radius:16px;margin-bottom:16px"><div style="font-size:48px;margin-bottom:8px">🔒</div><h3 style="color:var(--danger);margin-bottom:8px">Nivel ' + currentLevel + ' Bloqueado</h3><p style="color:#94a3b8;font-size:0.9rem;margin-bottom:16px">Aprueba el examen de ' + prevLvl + ' con al menos 80%</p><button onclick="setLevel(\'' + prevLvl + '\')" style="padding:10px 24px;border:none;border-radius:12px;background:var(--primary);color:white;cursor:pointer;font-weight:600">📝 Ir a ' + prevLvl + '</button></div>';
+    container.innerHTML = html;
+    return;
   }
-  container.innerHTML = html;
+
+  levelKeys.forEach(function(key) {
+    var cat = vocabularyDB[key];
+    var isLocked = !isPremium && !isInTrial && !FREE_VOCAB_CATEGORIES.includes(key);
+    html += '<div class="category-card ' + (isLocked ? 'locked' : '') + '" onclick="' + (isLocked ? 'showAccessDenied()' : "showVocabCategory('" + key + "')") + '"><span class="category-level" style="background:' + (colors[cat.level] || '#6366f1') + '">' + cat.level + '</span><div class="category-icon">' + cat.icon + '</div><div class="category-title">' + cat.title + '</div><div class="category-count">' + cat.words.length + ' palabras</div>' + (isLocked ? '<div style="margin-top:4px;font-size:0.7rem;color:#f59e0b">👑 Premium</div>' : '') + '</div>';
+  });
+
+  // Quiz button at bottom
+  if (levelKeys.length > 0 && levelUnlocked) {
+    var nextLvl = typeof LEVEL_ORDER !== 'undefined' ? LEVEL_ORDER[LEVEL_ORDER.indexOf(currentLevel) + 1] : null;
+    if (levelPsd) {
+      html += '<div style="text-align:center;padding:16px;background:rgba(16,185,129,0.1);border-radius:16px;margin-top:8px"><span style="font-size:24px">✅</span><p style="color:var(--success);font-weight:700;margin-top:4px">Nivel ' + currentLevel + ' aprobado</p>' + (nextLvl ? '<p style="color:#94a3b8;font-size:0.8rem">Nivel ' + nextLvl + ' desbloqueado</p>' : '<p style="color:#f59e0b;font-size:0.8rem">🏆 ¡Todos completados!</p>') + '</div>';
+    } else {
+      html += '<div style="text-align:center;padding:20px;background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.1));border-radius:16px;margin-top:8px"><div style="font-size:32px;margin-bottom:8px">📝</div><h4 style="margin-bottom:8px">¿Listo para el examen de ' + currentLevel + '?</h4><p style="color:#94a3b8;font-size:0.85rem;margin-bottom:12px">Necesitas 80% para avanzar</p><button onclick="showLevelQuiz(\'' + currentLevel + '\')" style="padding:12px 28px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;cursor:pointer;font-weight:700;font-size:1rem">🎯 Tomar examen</button></div>';
+    }
+  }
+  // Add Word of Day + badges
+  var wotdHtml = ''; try { wotdHtml = renderWordOfDay(); } catch(e) {}
+  var badgesHtml = ''; try { badgesHtml = renderAchievementBadges(); } catch(e) {}
+  container.innerHTML = wotdHtml + badgesHtml + html;
 }
 
 function showVocabCategory(key) {
+  // CHECK ACCESS - Block non-free categories for non-premium/non-trial users
+  if (!isPremium && !isInTrial && !FREE_VOCAB_CATEGORIES.includes(key)) {
+    showAccessDenied();
+    return;
+  }
+  
   currentVocabCategory = key;
   const cat = vocabularyDB[key];
   const container = document.getElementById('vocab-categories');
@@ -4810,7 +5312,8 @@ function showVocabCategory(key) {
     <div class="section-header">
       <button class="back-btn" onclick="stopSpeakAll();renderVocabCategories()">← Volver</button>
       <h2 class="section-title">${cat.icon} ${cat.title}</h2>
-      <button class="print-btn" id="speakAllBtn-${key}" onclick="speakAll('${key}')">🔊 Escuchar Todo</button>
+      <button class="print-btn" id="speakAllBtn-${key}" onclick="speakAll('${key}')">🔊 Escuchar</button>
+      <button class="print-btn" onclick="startFlashcards('${key}')" style="background:rgba(139,92,246,0.2);margin-left:4px">🃏 Flashcards</button>
     </div>
     <p style="text-align:center;opacity:0.6;margin-bottom:1rem;font-size:0.85rem">
       💡 Presiona ESC para detener • 🎤 Practica tu pronunciación
@@ -5128,17 +5631,17 @@ function shuffle(arr) {
 function initFlashcards() {
   flashcardDeck = shuffle(getAllWords()).slice(0, 20);
   flashcardIndex = 0;
-  renderFlashcard();
+  renderPracticeFlashcard();
 }
 
-function renderFlashcard() {
+function renderPracticeFlashcard() {
   const content = document.getElementById('practice-content');
   if(flashcardIndex >= flashcardDeck.length) {
     content.innerHTML = `
       <div class="score-display">
         <div class="score-number">🎉</div>
         <div class="score-label">¡Completaste las flashcards!</div>
-        <button class="flashcard-btn next" onclick="initFlashcards()">🔄 Empezar de nuevo</button>
+        <button class="flashcard-btn next" onclick="initFlashcards()">🔄 Nuevas tarjetas</button>
       </div>
     `;
     celebrate();
@@ -5162,8 +5665,8 @@ function renderFlashcard() {
         </div>
       </div>
       <div class="flashcard-controls">
-        <button class="flashcard-btn dont-know" onclick="flashcardIndex++;renderFlashcard()">❌ No sé</button>
-        <button class="flashcard-btn know" onclick="flashcardIndex++;renderFlashcard()">✅ Lo sé</button>
+        <button class="flashcard-btn dont-know" onclick="flashcardIndex++;renderPracticeFlashcard()">❌ No sé</button>
+        <button class="flashcard-btn know" onclick="flashcardIndex++;renderPracticeFlashcard()">✅ Lo sé</button>
       </div>
       <p style="text-align:center;margin-top:1rem;opacity:0.7">${flashcardIndex + 1} / ${flashcardDeck.length}</p>
     </div>
@@ -5747,9 +6250,14 @@ function getBestVoice() {
   const voices = window.speechSynthesis.getVoices();
   if(voices.length === 0) return null;
   
-  // Prioridad de voces (de mejor a peor calidad)
+  // ONLY consider English voices - never fall back to Spanish/other
+  const enVoices = voices.filter(v => v.lang.startsWith('en'));
+  if(enVoices.length === 0) {
+    // If no English voices found, return first voice but we'll force lang
+    return null;
+  }
+  
   const voicePriority = [
-    // Voces premium/naturales
     v => v.name.includes('Google') && v.lang.includes('en-US'),
     v => v.name.includes('Google') && v.lang.includes('en-GB'),
     v => v.name.includes('Microsoft') && v.name.includes('Natural') && v.lang.includes('en'),
@@ -5760,61 +6268,79 @@ function getBestVoice() {
     v => v.name.includes('Alex') && v.lang.includes('en'),
     v => v.name.includes('Microsoft') && v.lang.includes('en-US'),
     v => v.name.includes('Microsoft') && v.lang.includes('en'),
-    // Voces genéricas en inglés
-    v => v.lang === 'en-US' && !v.name.includes('eSpeak'),
-    v => v.lang === 'en-GB' && !v.name.includes('eSpeak'),
-    v => v.lang.startsWith('en') && !v.name.includes('eSpeak'),
-    v => v.lang.includes('en')
+    v => v.lang === 'en-US',
+    v => v.lang === 'en-GB',
+    v => v.lang.startsWith('en')
   ];
   
   for(const test of voicePriority) {
     const voice = voices.find(test);
     if(voice) {
       preferredVoice = voice;
-      console.log('🔊 Voz seleccionada:', voice.name, voice.lang);
       return voice;
     }
   }
   
-  return voices[0];
+  // Return first English voice
+  preferredVoice = enVoices[0];
+  return enVoices[0];
+}
+
+// Pre-load voices as soon as possible
+if(window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => {
+    preferredVoice = null;
+    getBestVoice();
+  };
 }
 
 // Añadir variación natural al habla
 function getNaturalVariation() {
   return {
-    rate: 0.82 + (Math.random() * 0.12),  // 0.82 - 0.94
-    pitch: 0.95 + (Math.random() * 0.1),   // 0.95 - 1.05
+    rate: 0.82 + (Math.random() * 0.12),
+    pitch: 0.95 + (Math.random() * 0.1),
   };
 }
+
+// Alphabet pronunciation map - ensures correct English pronunciation
+const alphabetPronunciation = {
+  'A':'ay','B':'bee','C':'see','D':'dee','E':'ee','F':'eff',
+  'G':'jee','H':'aitch','I':'eye','J':'jay','K':'kay','L':'ell',
+  'M':'em','N':'en','O':'oh','P':'pee','Q':'queue','R':'are',
+  'S':'ess','T':'tee','U':'you','V':'vee','W':'double you',
+  'X':'ex','Y':'why','Z':'zee'
+};
 
 function speakWord(text) {
   if(!('speechSynthesis' in window)) return;
   
-  // Cancelar cualquier audio anterior
   window.speechSynthesis.cancel();
   isSpeaking = false;
   
-  // Pequeña pausa para asegurar que se canceló
   setTimeout(() => {
-    // FIX: Para letras individuales del alfabeto, usar formato que evite "Capital A"
     let textToSpeak = text;
-    if(text.length === 1 && /[A-Z]/.test(text)) {
-      // Para letras mayúsculas individuales, usar minúscula para evitar "Capital"
-      textToSpeak = text.toLowerCase();
+    
+    // For single alphabet letters, use phonetic pronunciation
+    if(text.length === 1 && /[A-Za-z]/.test(text)) {
+      textToSpeak = alphabetPronunciation[text.toUpperCase()] || text;
     }
     
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.lang = 'en-US';
     
-    // Configuración natural
     const variation = getNaturalVariation();
     utterance.rate = variation.rate;
     utterance.pitch = variation.pitch;
     utterance.volume = 1;
     
-    // Usar la mejor voz disponible
+    // ALWAYS set English voice - critical for Spanish-language devices
     const voice = getBestVoice();
-    if(voice) utterance.voice = voice;
+    if(voice) {
+      utterance.voice = voice;
+    }
+    // Double-ensure English even if no voice found
+    utterance.lang = 'en-US';
     
     utterance.onstart = () => { isSpeaking = true; };
     utterance.onend = () => { isSpeaking = false; };
@@ -6097,6 +6623,8 @@ async function verificarEstadoCompleto(email) {
         isPremium = false;
         document.getElementById('trialBanner').classList.add('hidden');
         console.log('⚠️ Trial expirado');
+        // BLOQUEAR CONTENIDO - Mostrar banner de trial expirado
+        showTrialExpiredBanner();
       }
     }
     
@@ -6136,10 +6664,248 @@ function checkLocalTrialStatus() {
     isInTrial = false;
     isPremium = false;
     document.getElementById('trialBanner').classList.add('hidden');
+    // BLOQUEAR CONTENIDO - Trial expirado en modo local
+    showTrialExpiredBanner();
   }
   
   updatePremiumUI();
 }
+
+// ============================================
+// ACCESS CONTROL - Block content after trial expires
+// ============================================
+
+// FREE content (always available without trial/premium)
+const FREE_VOCAB_CATEGORIES = ['alphabet', 'numbers', 'colors', 'greetings', 'greetings_phrases', 'daily_routines'];
+const FREE_PANELS = ['vocabulary', 'practice']; // Basic panels always accessible
+
+function isContentFree(panelId, categoryKey) {
+  // Vocabulary: only basic categories are free
+  if (panelId === 'vocabulary' && categoryKey) {
+    return FREE_VOCAB_CATEGORIES.includes(categoryKey);
+  }
+  // Practice section has some free games
+  if (panelId === 'practice') return true; // but games inside check individually
+  // Grammar basic section free
+  if (panelId === 'grammar') return false; // locked after trial
+  return false;
+}
+
+function checkContentAccess(panelId, categoryKey) {
+  // Premium users and trial users have full access
+  if (isPremium) return true;
+  
+  // Not logged in - allow browsing basic content
+  if (!currentUser) {
+    // Show only free content
+    if (panelId === 'vocabulary') {
+      if (!categoryKey) return true; // can see category list
+      return FREE_VOCAB_CATEGORIES.includes(categoryKey);
+    }
+    if (panelId === 'practice') return true;
+    // Block everything else
+    return false;
+  }
+  
+  // Logged in but trial expired and not premium
+  if (panelId === 'vocabulary') {
+    if (!categoryKey) return true; // can see list
+    return FREE_VOCAB_CATEGORIES.includes(categoryKey);
+  }
+  if (panelId === 'practice') return true;
+  
+  // All other panels are locked
+  return false;
+}
+
+function showAccessDenied() {
+  openPremiumModal();
+}
+
+// ============================================
+// LEVEL QUIZ SYSTEM - Must pass 80% to advance
+// ============================================
+var QUIZ_PASS_SCORE = 80;
+var LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+var levelQuizzes = {
+  A1: { title: 'A1 - Beginner', questions: [
+    {q:'What does "house" mean?', o:['Casa','Carro','Perro','Gato'], c:0},
+    {q:'"She ___ a student."', o:['am','is','are','be'], c:1},
+    {q:'What number is "seven"?', o:['5','6','7','8'], c:2},
+    {q:'Choose: "___ apple"', o:['A','An','The','--'], c:1},
+    {q:'What does "brother" mean?', o:['Primo','Hermano','Tío','Padre'], c:1},
+    {q:'"They ___ from Mexico."', o:['is','am','are','be'], c:2},
+    {q:'What color is the sky?', o:['Green','Blue','Red','Yellow'], c:1},
+    {q:'"I ___ a teacher."', o:['is','am','are','be'], c:1},
+    {q:'What does "Monday" mean?', o:['Martes','Lunes','Miércoles','Domingo'], c:1},
+    {q:'What does "water" mean?', o:['Fuego','Agua','Tierra','Aire'], c:1},
+    {q:'"This is ___ book."', o:['a','an','the','--'], c:0},
+    {q:'How do you say "rojo"?', o:['Blue','Green','Red','Yellow'], c:2}
+  ]},
+  A2: { title: 'A2 - Elementary', questions: [
+    {q:'"She ___ to school every day."', o:['go','goes','going','gone'], c:1},
+    {q:'What does "shoulder" mean?', o:['Rodilla','Hombro','Codo','Muñeca'], c:1},
+    {q:'"I ___ breakfast at 7 AM."', o:['have','has','having','had'], c:0},
+    {q:'What is a "fork"?', o:['Cuchillo','Cuchara','Tenedor','Plato'], c:2},
+    {q:'"There ___ many people."', o:['is','are','was','be'], c:1},
+    {q:'What does "jacket" mean?', o:['Pantalón','Camisa','Chaqueta','Zapato'], c:2},
+    {q:'"He ___ TV last night."', o:['watch','watches','watched','watching'], c:2},
+    {q:'A "cat" is a...', o:['Animal','Food','Color','Place'], c:0},
+    {q:'"We ___ going to the beach."', o:['is','am','are','be'], c:2},
+    {q:'What does "kitchen" mean?', o:['Baño','Cocina','Sala','Dormitorio'], c:1},
+    {q:'"She doesn\'t ___ coffee."', o:['like','likes','liking','liked'], c:0},
+    {q:'Opposite of "hot"?', o:['Warm','Cool','Cold','Mild'], c:2},
+    {q:'"___ you speak English?"', o:['Do','Does','Did','Are'], c:0},
+    {q:'What does "bus" mean?', o:['Tren','Autobús','Avión','Barco'], c:1}
+  ]},
+  B1: { title: 'B1 - Intermediate', questions: [
+    {q:'"If I ___ rich, I would travel."', o:['am','was','were','be'], c:2},
+    {q:'What does "although" mean?', o:['Porque','Aunque','Además','Sin embargo'], c:1},
+    {q:'"She has ___ here since 2020."', o:['live','lived','living','lives'], c:1},
+    {q:'"Deadline" means...', o:['Línea muerta','Fecha límite','Fin de línea','Última hora'], c:1},
+    {q:'"I wish I ___ more time."', o:['have','has','had','having'], c:2},
+    {q:'What does "reliable" mean?', o:['Rápido','Confiable','Barato','Difícil'], c:1},
+    {q:'"The book ___ by Rowling."', o:['wrote','written','was written','is writing'], c:2},
+    {q:'"Meanwhile" means...', o:['Finalmente','Mientras tanto','Sin embargo','Además'], c:1},
+    {q:'"I\'ve been ___ for two hours."', o:['study','studied','studying','studies'], c:2},
+    {q:'What does "purchase" mean?', o:['Vender','Comprar','Devolver','Cambiar'], c:1},
+    {q:'"He told me ___ he was tired."', o:['what','which','that','who'], c:2},
+    {q:'"By next year, I ___ graduated."', o:['will have','will has','will be','would'], c:0}
+  ]},
+  B2: { title: 'B2 - Upper Intermediate', questions: [
+    {q:'"Had I known, I ___."', o:['would act','would have acted','will act','acted'], c:1},
+    {q:'"Breakthrough" means...', o:['Ruptura','Avance importante','Descanso','Fracaso'], c:1},
+    {q:'"Not only ___ she smart..."', o:['is','was','does','has'], c:0},
+    {q:'"Nevertheless" means...', o:['Nunca','Sin embargo','Además','Por lo tanto'], c:1},
+    {q:'"It\'s time we ___ a decision."', o:['make','made','making','will make'], c:1},
+    {q:'What does "overwhelmed" mean?', o:['Aburrido','Abrumado','Emocionado','Relajado'], c:1},
+    {q:'"Hardly ___ he arrived..."', o:['has','had','was','did'], c:1},
+    {q:'"Feasible" means...', o:['Imposible','Factible','Flexible','Visible'], c:1},
+    {q:'"I\'d rather you ___ the truth."', o:['tell','told','telling','tells'], c:1},
+    {q:'What does "thorough" mean?', o:['Rápido','Minucioso','Difícil','Pensativo'], c:1},
+    {q:'"Were it not ___ his help..."', o:['to','for','by','with'], c:1},
+    {q:'"To turn down" means...', o:['Bajar','Rechazar','Girar','Apagar'], c:1}
+  ]},
+  C1: { title: 'C1 - Advanced', questions: [
+    {q:'"Under no circumstances ___"', o:['would','should','could','might'], c:0},
+    {q:'"Ubiquitous" means...', o:['Único','Omnipresente','Ambiguo','Ubicado'], c:1},
+    {q:'"Scarcely had she left ___"', o:['when','than','that','before'], c:0},
+    {q:'"To undermine" means...', o:['Apoyar','Socavar','Subrayar','Comprender'], c:1},
+    {q:'"It is imperative that he ___"', o:['arrives','arrive','arriving','arrived'], c:1},
+    {q:'"Nuance" means...', o:['Novedad','Matiz','Molestia','Neutralidad'], c:1},
+    {q:'"Little ___ they know..."', o:['do','did','does','are'], c:1},
+    {q:'"Pragmatic" means...', o:['Dramático','Práctico','Problemático','Programático'], c:1},
+    {q:'"The more you practice..."', o:['good','better','best','well'], c:1},
+    {q:'"Exacerbate" means...', o:['Mejorar','Exagerar','Empeorar','Examinar'], c:2},
+    {q:'"Were he to resign..."', o:['will','would','shall','may'], c:1},
+    {q:'"Unprecedented" means...', o:['No preparado','Sin precedentes','Impredecible','No presentado'], c:1}
+  ]},
+  C2: { title: 'C2 - Mastery', questions: [
+    {q:'"Seldom ___ such eloquence"', o:['one finds','does one find','finding one','one found'], c:1},
+    {q:'"Ephemeral" means...', o:['Eterno','Efímero','Empírico','Enfático'], c:1},
+    {q:'"Be that as it ___..."', o:['can','may','will','might'], c:1},
+    {q:'"Obfuscate" means...', o:['Ofender','Observar','Confundir','Obligar'], c:2},
+    {q:'"So profound ___ the impact"', o:['is','was','had','has'], c:1},
+    {q:'"Quintessential" means...', o:['Cuestionable','Ejemplar','Quincenal','Quieto'], c:1},
+    {q:'"Sycophant" means...', o:['Sinfonía','Adulador','Síntoma','Significante'], c:1},
+    {q:'"At no point ___ admit"', o:['has','did','was','were'], c:1},
+    {q:'"Cogent" means...', o:['Cognitivo','Convincente','Coherente','Cogedor'], c:1},
+    {q:'"Such ___ the complexity"', o:['is','was','were','had'], c:1},
+    {q:'"Superfluous" means...', o:['Superior','Innecesario','Superficial','Supremo'], c:1},
+    {q:'"Verisimilitude" means...', o:['Versatilidad','Verosimilitud','Verificación','Veracidad'], c:1}
+  ]}
+};
+
+function getLevelProgress() {
+  try { var s = localStorage.getItem('ema_level_progress'); if (s) return JSON.parse(s); } catch(e) {}
+  return { A1: 'unlocked', A2: 'locked', B1: 'locked', B2: 'locked', C1: 'locked', C2: 'locked' };
+}
+function saveLevelProgress(p) { localStorage.setItem('ema_level_progress', JSON.stringify(p)); }
+function isLevelUnlocked(level) { if (isPremium) return true; var p = getLevelProgress(); return p[level] === 'unlocked' || p[level] === 'passed'; }
+function isLevelPassed(level) { var p = getLevelProgress(); return p[level] === 'passed'; }
+function unlockNextLevel(cl) {
+  var p = getLevelProgress(); var idx = LEVEL_ORDER.indexOf(cl); p[cl] = 'passed';
+  if (idx < LEVEL_ORDER.length - 1) { var nl = LEVEL_ORDER[idx + 1]; if (p[nl] === 'locked') p[nl] = 'unlocked'; }
+  saveLevelProgress(p);
+}
+
+function showLevelQuiz(level) {
+  var quiz = levelQuizzes[level]; if (!quiz) return;
+  var allQ = quiz.questions.slice(); for (var i = allQ.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = allQ[i]; allQ[i] = allQ[j]; allQ[j] = t; }
+  var questions = allQ.slice(0, 12); var currentQ = 0, score = 0, answered = false;
+
+  function renderQ() {
+    var q = questions[currentQ];
+    var ov = document.getElementById('levelQuizOverlay');
+    if (!ov) { ov = document.createElement('div'); ov.id = 'levelQuizOverlay'; ov.className = 'level-quiz-overlay'; document.body.appendChild(ov); }
+    var dots = ''; for (var i = 0; i < questions.length; i++) dots += '<div class="lq-dot ' + (i === currentQ ? 'current' : '') + '"></div>';
+    var opts = ''; for (var i = 0; i < q.o.length; i++) opts += '<div class="lq-option" onclick="window._qa(' + i + ',' + q.c + ')">' + q.o[i] + '</div>';
+    ov.innerHTML = '<div class="level-quiz-container"><div class="level-quiz-header"><h2>📝 ' + quiz.title + '</h2><p>Necesitas ' + QUIZ_PASS_SCORE + '% para avanzar</p></div><div class="lq-progress">' + dots + '</div><div class="lq-question">' + q.q + '</div><div class="lq-options">' + opts + '</div><p style="text-align:center;color:#64748b;font-size:0.8rem;margin-top:16px">Pregunta ' + (currentQ+1) + '/' + questions.length + '</p></div>';
+    answered = false;
+  }
+
+  window._qa = function(sel, cor) {
+    if (answered) return; answered = true;
+    var opts = document.querySelectorAll('.lq-option'); opts[cor].classList.add('correct-answer');
+    if (sel !== cor) opts[sel].classList.add('wrong-answer'); else score++;
+    setTimeout(function() { currentQ++; if (currentQ < questions.length) renderQ(); else showQuizResult(level, score, questions.length); }, 1200);
+  };
+  renderQ();
+}
+
+function showQuizResult(level, score, total) {
+  var pct = Math.round((score / total) * 100); var passed = pct >= QUIZ_PASS_SCORE;
+  if (passed) unlockNextLevel(level);
+  var nl = LEVEL_ORDER[LEVEL_ORDER.indexOf(level) + 1]; var ov = document.getElementById('levelQuizOverlay');
+  ov.innerHTML = '<div class="level-quiz-container"><div style="text-align:center;padding:20px"><div style="font-size:64px;margin-bottom:16px">' + (passed ? '🏆' : '📖') + '</div><h3 style="color:white;font-size:1.4rem;margin-bottom:8px">' + (passed ? '¡Nivel aprobado!' : 'Sigue practicando') + '</h3><p style="color:#a5b4fc;margin-bottom:20px">' + (passed ? (nl ? 'Nivel ' + nl + ' desbloqueado!' : '¡Todos completados!') : 'Necesitas ' + QUIZ_PASS_SCORE + '%.') + '</p><div style="font-size:2.5rem;font-weight:900;color:' + (passed ? 'var(--success)' : 'var(--danger)') + '">' + pct + '%</div><p style="color:#94a3b8">' + score + '/' + total + ' correctas</p><div class="lq-score-bar"><div class="lq-score-fill" style="width:' + pct + '%;background:' + (passed ? 'var(--success)' : 'var(--danger)') + '"></div></div><div style="margin-top:20px"><button onclick="document.getElementById(\'levelQuizOverlay\').remove();if(typeof updateLevelButtons===\'function\')updateLevelButtons();renderVocabCategories()" style="padding:14px 28px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;cursor:pointer;font-weight:700;font-size:1rem">' + (passed ? '🚀 Continuar' : '🔄 Reintentar') + '</button><br><button onclick="document.getElementById(\'levelQuizOverlay\').remove()" style="padding:10px;background:transparent;color:#888;border:none;cursor:pointer;margin-top:10px">← Volver</button></div></div></div>';
+  if (passed) try { celebrate(); } catch(e) {}
+}
+
+function updateLevelButtons() {
+  var p = getLevelProgress();
+  LEVEL_ORDER.forEach(function(level) {
+    var btn = document.getElementById('lvlbtn-' + level); if (!btn) return;
+    var s = p[level];
+    if (isPremium || s === 'passed') { btn.textContent = level + ' ✓'; btn.style.opacity = '1'; }
+    else if (s === 'unlocked') { btn.textContent = level; btn.style.opacity = '1'; }
+    else { btn.textContent = level + ' 🔒'; btn.style.opacity = '0.5'; }
+  });
+}
+
+
+function showTrialExpiredBanner() {
+  // Remove any existing banner first
+  const existing = document.getElementById('trialExpiredOverlay');
+  if (existing) existing.remove();
+  
+  const overlay = document.createElement('div');
+  overlay.id = 'trialExpiredOverlay';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:white;border-radius:20px;padding:32px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <div style="font-size:60px;margin-bottom:16px;">⏰</div>
+      <h2 style="margin:0 0 8px;font-size:22px;color:#1a1a2e;">Tu período de prueba ha terminado</h2>
+      <p style="color:#666;font-size:14px;margin-bottom:20px;line-height:1.6;">
+        Tus 7 días de prueba gratuita han expirado. Para seguir aprendiendo con acceso completo, activa tu plan Premium.
+      </p>
+      <p style="color:#888;font-size:12px;margin-bottom:20px;">
+        Todavía puedes acceder al contenido básico: Alfabeto, Números, Colores y Saludos.
+      </p>
+      <button onclick="document.getElementById('trialExpiredOverlay').remove();openPremiumModal();" 
+        style="padding:14px 32px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;width:100%;margin-bottom:10px;">
+        👑 Obtener Premium
+      </button>
+      <button onclick="document.getElementById('trialExpiredOverlay').remove();" 
+        style="padding:10px 20px;background:transparent;color:#888;border:none;cursor:pointer;font-size:13px;">
+        Continuar con contenido básico
+      </button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+document.addEventListener('DOMContentLoaded', function() { setTimeout(function() { if (typeof updateLevelButtons === 'function') updateLevelButtons(); }, 500); });
 
 // Update UI based on premium status
 function updatePremiumUI() {
@@ -6314,18 +7080,7 @@ window.deactivatePremium = deactivatePremium;
 // Check for locked content and apply lock
 function lockPremiumContent() {
   if(isPremium) return;
-  
-  // Lock advanced levels (B2, C1, C2)
-  const levelButtons = document.querySelectorAll('.level-btn.b2, .level-btn.c1, .level-btn.c2');
-  levelButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      if(!isPremium) {
-        e.preventDefault();
-        e.stopPropagation();
-        openPremiumModal();
-      }
-    });
-  });
+  // Level locking is now handled by the quiz progression system
 }
 
 // Show ad between sections (called periodically)
@@ -7140,6 +7895,42 @@ const wordDictionary = {
   'anxiety': {es: 'ansiedad', phonetic: '/æŋˈzaɪəti/'},
   'depression': {es: 'depresión', phonetic: '/dɪˈpreʃən/'},
   'procrastination': {es: 'procrastinación', phonetic: '/prəˌkræstɪˈneɪʃən/'},
+
+  'able': {es: 'capaz', phonetic: '/ˈeɪbəl/'}, 'about': {es: 'acerca de', phonetic: '/əˈbaʊt/'}, 'above': {es: 'arriba', phonetic: '/əˈbʌv/'}, 'accept': {es: 'aceptar', phonetic: '/əkˈsept/'}, 'actually': {es: 'en realidad', phonetic: '/ˈæktʃuəli/'}, 'afraid': {es: 'asustado', phonetic: '/əˈfreɪd/'}, 'after': {es: 'después', phonetic: '/ˈɑːftər/'}, 'again': {es: 'de nuevo', phonetic: '/əˈɡen/'}, 'against': {es: 'contra', phonetic: '/əˈɡenst/'}, 'agree': {es: 'de acuerdo', phonetic: '/əˈɡriː/'}, 'air': {es: 'aire', phonetic: '/er/'}, 'alive': {es: 'vivo', phonetic: '/əˈlaɪv/'}, 'all': {es: 'todo', phonetic: '/ɔːl/'}, 'allow': {es: 'permitir', phonetic: '/əˈlaʊ/'}, 'almost': {es: 'casi', phonetic: '/ˈɔːlmoʊst/'}, 'alone': {es: 'solo', phonetic: '/əˈloʊn/'}, 'already': {es: 'ya', phonetic: '/ɔːlˈredi/'}, 'also': {es: 'también', phonetic: '/ˈɔːlsoʊ/'}, 'always': {es: 'siempre', phonetic: '/ˈɔːlweɪz/'}, 'among': {es: 'entre', phonetic: '/əˈmʌŋ/'},
+  'animal': {es: 'animal', phonetic: '/ˈænɪməl/'}, 'answer': {es: 'respuesta', phonetic: '/ˈɑːnsər/'}, 'any': {es: 'cualquier', phonetic: '/ˈeni/'}, 'appear': {es: 'aparecer', phonetic: '/əˈpɪr/'}, 'apple': {es: 'manzana', phonetic: '/ˈæpəl/'}, 'arm': {es: 'brazo', phonetic: '/ɑːrm/'}, 'around': {es: 'alrededor', phonetic: '/əˈraʊnd/'}, 'arrive': {es: 'llegar', phonetic: '/əˈraɪv/'}, 'ask': {es: 'preguntar', phonetic: '/æsk/'}, 'away': {es: 'lejos', phonetic: '/əˈweɪ/'}, 'baby': {es: 'bebé', phonetic: '/ˈbeɪbi/'}, 'back': {es: 'espalda', phonetic: '/bæk/'}, 'bad': {es: 'malo', phonetic: '/bæd/'}, 'ball': {es: 'pelota', phonetic: '/bɔːl/'}, 'beautiful': {es: 'hermoso', phonetic: '/ˈbjuːtɪfəl/'}, 'become': {es: 'convertirse', phonetic: '/bɪˈkʌm/'}, 'bed': {es: 'cama', phonetic: '/bed/'}, 'before': {es: 'antes', phonetic: '/bɪˈfɔːr/'}, 'begin': {es: 'comenzar', phonetic: '/bɪˈɡɪn/'}, 'behind': {es: 'detrás', phonetic: '/bɪˈhaɪnd/'},
+  'believe': {es: 'creer', phonetic: '/bɪˈliːv/'}, 'below': {es: 'debajo', phonetic: '/bɪˈloʊ/'}, 'best': {es: 'mejor', phonetic: '/best/'}, 'between': {es: 'entre', phonetic: '/bɪˈtwiːn/'}, 'big': {es: 'grande', phonetic: '/bɪɡ/'}, 'bird': {es: 'pájaro', phonetic: '/bɜːrd/'}, 'black': {es: 'negro', phonetic: '/blæk/'}, 'blood': {es: 'sangre', phonetic: '/blʌd/'}, 'blue': {es: 'azul', phonetic: '/bluː/'}, 'boat': {es: 'bote', phonetic: '/boʊt/'}, 'body': {es: 'cuerpo', phonetic: '/ˈbɒdi/'}, 'book': {es: 'libro', phonetic: '/bʊk/'}, 'born': {es: 'nacido', phonetic: '/bɔːrn/'}, 'both': {es: 'ambos', phonetic: '/boʊθ/'}, 'boy': {es: 'niño', phonetic: '/bɔɪ/'}, 'bread': {es: 'pan', phonetic: '/bred/'}, 'break': {es: 'romper', phonetic: '/breɪk/'}, 'bring': {es: 'traer', phonetic: '/brɪŋ/'}, 'brother': {es: 'hermano', phonetic: '/ˈbrʌðər/'}, 'build': {es: 'construir', phonetic: '/bɪld/'},
+  'burn': {es: 'quemar', phonetic: '/bɜːrn/'}, 'business': {es: 'negocio', phonetic: '/ˈbɪznəs/'}, 'busy': {es: 'ocupado', phonetic: '/ˈbɪzi/'}, 'buy': {es: 'comprar', phonetic: '/baɪ/'}, 'call': {es: 'llamar', phonetic: '/kɔːl/'}, 'car': {es: 'carro', phonetic: '/kɑːr/'}, 'care': {es: 'cuidado', phonetic: '/ker/'}, 'carry': {es: 'llevar', phonetic: '/ˈkæri/'}, 'catch': {es: 'atrapar', phonetic: '/kætʃ/'}, 'chair': {es: 'silla', phonetic: '/tʃer/'}, 'chance': {es: 'oportunidad', phonetic: '/tʃæns/'}, 'child': {es: 'niño/a', phonetic: '/tʃaɪld/'}, 'children': {es: 'niños', phonetic: '/ˈtʃɪldrən/'}, 'choose': {es: 'elegir', phonetic: '/tʃuːz/'}, 'city': {es: 'ciudad', phonetic: '/ˈsɪti/'}, 'clean': {es: 'limpio', phonetic: '/kliːn/'}, 'clear': {es: 'claro', phonetic: '/klɪr/'}, 'close': {es: 'cerrar', phonetic: '/kloʊz/'}, 'cloud': {es: 'nube', phonetic: '/klaʊd/'}, 'cold': {es: 'frío', phonetic: '/koʊld/'},
+  'come': {es: 'venir', phonetic: '/kʌm/'}, 'common': {es: 'común', phonetic: '/ˈkɒmən/'}, 'company': {es: 'empresa', phonetic: '/ˈkʌmpəni/'}, 'complete': {es: 'completo', phonetic: '/kəmˈpliːt/'}, 'continue': {es: 'continuar', phonetic: '/kənˈtɪnjuː/'}, 'cook': {es: 'cocinar', phonetic: '/kʊk/'}, 'cool': {es: 'fresco', phonetic: '/kuːl/'}, 'corner': {es: 'esquina', phonetic: '/ˈkɔːrnər/'}, 'cost': {es: 'costo', phonetic: '/kɒst/'}, 'country': {es: 'país', phonetic: '/ˈkʌntri/'}, 'cover': {es: 'cubrir', phonetic: '/ˈkʌvər/'}, 'create': {es: 'crear', phonetic: '/kriˈeɪt/'}, 'cry': {es: 'llorar', phonetic: '/kraɪ/'}, 'cut': {es: 'cortar', phonetic: '/kʌt/'}, 'dance': {es: 'bailar', phonetic: '/dæns/'}, 'danger': {es: 'peligro', phonetic: '/ˈdeɪndʒər/'}, 'dark': {es: 'oscuro', phonetic: '/dɑːrk/'}, 'daughter': {es: 'hija', phonetic: '/ˈdɔːtər/'}, 'day': {es: 'día', phonetic: '/deɪ/'}, 'dead': {es: 'muerto', phonetic: '/ded/'},
+  'decide': {es: 'decidir', phonetic: '/dɪˈsaɪd/'}, 'deep': {es: 'profundo', phonetic: '/diːp/'}, 'difficult': {es: 'difícil', phonetic: '/ˈdɪfɪkəlt/'}, 'dinner': {es: 'cena', phonetic: '/ˈdɪnər/'}, 'do': {es: 'hacer', phonetic: '/duː/'}, 'doctor': {es: 'doctor', phonetic: '/ˈdɒktər/'}, 'dog': {es: 'perro', phonetic: '/dɒɡ/'}, 'door': {es: 'puerta', phonetic: '/dɔːr/'}, 'down': {es: 'abajo', phonetic: '/daʊn/'}, 'draw': {es: 'dibujar', phonetic: '/drɔː/'}, 'dream': {es: 'sueño', phonetic: '/driːm/'}, 'drink': {es: 'beber', phonetic: '/drɪŋk/'}, 'drive': {es: 'conducir', phonetic: '/draɪv/'}, 'during': {es: 'durante', phonetic: '/ˈdjʊərɪŋ/'}, 'each': {es: 'cada', phonetic: '/iːtʃ/'}, 'ear': {es: 'oreja', phonetic: '/ɪr/'}, 'early': {es: 'temprano', phonetic: '/ˈɜːrli/'}, 'earth': {es: 'tierra', phonetic: '/ɜːrθ/'}, 'easy': {es: 'fácil', phonetic: '/ˈiːzi/'}, 'eat': {es: 'comer', phonetic: '/iːt/'},
+  'empty': {es: 'vacío', phonetic: '/ˈempti/'}, 'end': {es: 'fin', phonetic: '/end/'}, 'enjoy': {es: 'disfrutar', phonetic: '/ɪnˈdʒɔɪ/'}, 'enough': {es: 'suficiente', phonetic: '/ɪˈnʌf/'}, 'enter': {es: 'entrar', phonetic: '/ˈentər/'}, 'even': {es: 'incluso', phonetic: '/ˈiːvən/'}, 'evening': {es: 'tarde/noche', phonetic: '/ˈiːvnɪŋ/'}, 'every': {es: 'cada', phonetic: '/ˈevri/'}, 'everyone': {es: 'todos', phonetic: '/ˈevriwʌn/'}, 'everything': {es: 'todo', phonetic: '/ˈevriθɪŋ/'}, 'example': {es: 'ejemplo', phonetic: '/ɪɡˈzæmpəl/'}, 'eye': {es: 'ojo', phonetic: '/aɪ/'}, 'face': {es: 'cara', phonetic: '/feɪs/'}, 'fact': {es: 'hecho', phonetic: '/fækt/'}, 'fall': {es: 'caer', phonetic: '/fɔːl/'}, 'family': {es: 'familia', phonetic: '/ˈfæməli/'}, 'famous': {es: 'famoso', phonetic: '/ˈfeɪməs/'}, 'far': {es: 'lejos', phonetic: '/fɑːr/'}, 'fast': {es: 'rápido', phonetic: '/fæst/'}, 'father': {es: 'padre', phonetic: '/ˈfɑːðər/'},
+  'fear': {es: 'miedo', phonetic: '/fɪr/'}, 'feel': {es: 'sentir', phonetic: '/fiːl/'}, 'few': {es: 'pocos', phonetic: '/fjuː/'}, 'fight': {es: 'pelear', phonetic: '/faɪt/'}, 'fill': {es: 'llenar', phonetic: '/fɪl/'}, 'finally': {es: 'finalmente', phonetic: '/ˈfaɪnəli/'}, 'find': {es: 'encontrar', phonetic: '/faɪnd/'}, 'fine': {es: 'bien', phonetic: '/faɪn/'}, 'finger': {es: 'dedo', phonetic: '/ˈfɪŋɡər/'}, 'finish': {es: 'terminar', phonetic: '/ˈfɪnɪʃ/'}, 'fire': {es: 'fuego', phonetic: '/faɪər/'}, 'first': {es: 'primero', phonetic: '/fɜːrst/'}, 'fish': {es: 'pescado', phonetic: '/fɪʃ/'}, 'five': {es: 'cinco', phonetic: '/faɪv/'}, 'floor': {es: 'piso', phonetic: '/flɔːr/'}, 'flower': {es: 'flor', phonetic: '/ˈflaʊər/'}, 'fly': {es: 'volar', phonetic: '/flaɪ/'}, 'follow': {es: 'seguir', phonetic: '/ˈfɒloʊ/'}, 'food': {es: 'comida', phonetic: '/fuːd/'}, 'foot': {es: 'pie', phonetic: '/fʊt/'},
+  'for': {es: 'para', phonetic: '/fɔːr/'}, 'foreign': {es: 'extranjero', phonetic: '/ˈfɒrən/'}, 'forest': {es: 'bosque', phonetic: '/ˈfɒrɪst/'}, 'forget': {es: 'olvidar', phonetic: '/fərˈɡet/'}, 'four': {es: 'cuatro', phonetic: '/fɔːr/'}, 'free': {es: 'libre', phonetic: '/friː/'}, 'friend': {es: 'amigo', phonetic: '/frend/'}, 'fruit': {es: 'fruta', phonetic: '/fruːt/'}, 'full': {es: 'lleno', phonetic: '/fʊl/'}, 'fun': {es: 'diversión', phonetic: '/fʌn/'}, 'future': {es: 'futuro', phonetic: '/ˈfjuːtʃər/'}, 'game': {es: 'juego', phonetic: '/ɡeɪm/'}, 'garden': {es: 'jardín', phonetic: '/ˈɡɑːrdən/'}, 'get': {es: 'obtener', phonetic: '/ɡet/'}, 'girl': {es: 'niña', phonetic: '/ɡɜːrl/'}, 'give': {es: 'dar', phonetic: '/ɡɪv/'}, 'glass': {es: 'vaso', phonetic: '/ɡlæs/'}, 'go': {es: 'ir', phonetic: '/ɡoʊ/'}, 'gold': {es: 'oro', phonetic: '/ɡoʊld/'}, 'good': {es: 'bueno', phonetic: '/ɡʊd/'},
+  'great': {es: 'genial', phonetic: '/ɡreɪt/'}, 'green': {es: 'verde', phonetic: '/ɡriːn/'}, 'ground': {es: 'suelo', phonetic: '/ɡraʊnd/'}, 'group': {es: 'grupo', phonetic: '/ɡruːp/'}, 'grow': {es: 'crecer', phonetic: '/ɡroʊ/'}, 'guess': {es: 'adivinar', phonetic: '/ɡes/'}, 'hair': {es: 'cabello', phonetic: '/her/'}, 'half': {es: 'mitad', phonetic: '/hæf/'}, 'hand': {es: 'mano', phonetic: '/hænd/'}, 'happen': {es: 'suceder', phonetic: '/ˈhæpən/'}, 'happy': {es: 'feliz', phonetic: '/ˈhæpi/'}, 'hard': {es: 'duro', phonetic: '/hɑːrd/'}, 'head': {es: 'cabeza', phonetic: '/hed/'}, 'health': {es: 'salud', phonetic: '/helθ/'}, 'hear': {es: 'oír', phonetic: '/hɪr/'}, 'heart': {es: 'corazón', phonetic: '/hɑːrt/'}, 'heavy': {es: 'pesado', phonetic: '/ˈhevi/'}, 'help': {es: 'ayudar', phonetic: '/help/'}, 'here': {es: 'aquí', phonetic: '/hɪr/'}, 'high': {es: 'alto', phonetic: '/haɪ/'},
+  'history': {es: 'historia', phonetic: '/ˈhɪstəri/'}, 'hold': {es: 'sostener', phonetic: '/hoʊld/'}, 'home': {es: 'hogar', phonetic: '/hoʊm/'}, 'hope': {es: 'esperanza', phonetic: '/hoʊp/'}, 'horse': {es: 'caballo', phonetic: '/hɔːrs/'}, 'hospital': {es: 'hospital', phonetic: '/ˈhɒspɪtəl/'}, 'hot': {es: 'caliente', phonetic: '/hɒt/'}, 'hotel': {es: 'hotel', phonetic: '/hoʊˈtel/'}, 'hour': {es: 'hora', phonetic: '/aʊər/'}, 'house': {es: 'casa', phonetic: '/haʊs/'}, 'how': {es: 'cómo', phonetic: '/haʊ/'}, 'huge': {es: 'enorme', phonetic: '/hjuːdʒ/'}, 'human': {es: 'humano', phonetic: '/ˈhjuːmən/'}, 'hungry': {es: 'hambriento', phonetic: '/ˈhʌŋɡri/'}, 'hurt': {es: 'herir', phonetic: '/hɜːrt/'}, 'husband': {es: 'esposo', phonetic: '/ˈhʌzbənd/'}, 'idea': {es: 'idea', phonetic: '/aɪˈdiːə/'}, 'imagine': {es: 'imaginar', phonetic: '/ɪˈmædʒɪn/'}, 'include': {es: 'incluir', phonetic: '/ɪnˈkluːd/'}, 'increase': {es: 'aumentar', phonetic: '/ɪnˈkriːs/'},
+  'information': {es: 'información', phonetic: '/ˌɪnfərˈmeɪʃən/'}, 'inside': {es: 'dentro', phonetic: '/ɪnˈsaɪd/'}, 'instead': {es: 'en lugar de', phonetic: '/ɪnˈsted/'}, 'interest': {es: 'interés', phonetic: '/ˈɪntrəst/'}, 'island': {es: 'isla', phonetic: '/ˈaɪlənd/'}, 'job': {es: 'trabajo', phonetic: '/dʒɒb/'}, 'join': {es: 'unirse', phonetic: '/dʒɔɪn/'}, 'jump': {es: 'saltar', phonetic: '/dʒʌmp/'}, 'just': {es: 'justo', phonetic: '/dʒʌst/'}, 'keep': {es: 'mantener', phonetic: '/kiːp/'}, 'key': {es: 'llave', phonetic: '/kiː/'}, 'kid': {es: 'niño', phonetic: '/kɪd/'}, 'kind': {es: 'amable', phonetic: '/kaɪnd/'}, 'king': {es: 'rey', phonetic: '/kɪŋ/'}, 'kitchen': {es: 'cocina', phonetic: '/ˈkɪtʃən/'}, 'knee': {es: 'rodilla', phonetic: '/niː/'}, 'knife': {es: 'cuchillo', phonetic: '/naɪf/'}, 'know': {es: 'saber', phonetic: '/noʊ/'}, 'knowledge': {es: 'conocimiento', phonetic: '/ˈnɒlɪdʒ/'}, 'land': {es: 'tierra', phonetic: '/lænd/'},
+  'language': {es: 'idioma', phonetic: '/ˈlæŋɡwɪdʒ/'}, 'large': {es: 'grande', phonetic: '/lɑːrdʒ/'}, 'last': {es: 'último', phonetic: '/lɑːst/'}, 'late': {es: 'tarde', phonetic: '/leɪt/'}, 'laugh': {es: 'reír', phonetic: '/lɑːf/'}, 'law': {es: 'ley', phonetic: '/lɔː/'}, 'lead': {es: 'liderar', phonetic: '/liːd/'}, 'learn': {es: 'aprender', phonetic: '/lɜːrn/'}, 'leave': {es: 'salir', phonetic: '/liːv/'}, 'left': {es: 'izquierda', phonetic: '/left/'}, 'less': {es: 'menos', phonetic: '/les/'}, 'letter': {es: 'carta', phonetic: '/ˈletər/'}, 'library': {es: 'biblioteca', phonetic: '/ˈlaɪbrəri/'}, 'life': {es: 'vida', phonetic: '/laɪf/'}, 'light': {es: 'luz', phonetic: '/laɪt/'}, 'like': {es: 'gustar', phonetic: '/laɪk/'}, 'line': {es: 'línea', phonetic: '/laɪn/'}, 'listen': {es: 'escuchar', phonetic: '/ˈlɪsən/'}, 'little': {es: 'pequeño', phonetic: '/ˈlɪtəl/'}, 'live': {es: 'vivir', phonetic: '/lɪv/'},
+  'long': {es: 'largo', phonetic: '/lɒŋ/'}, 'look': {es: 'mirar', phonetic: '/lʊk/'}, 'lose': {es: 'perder', phonetic: '/luːz/'}, 'love': {es: 'amor', phonetic: '/lʌv/'}, 'low': {es: 'bajo', phonetic: '/loʊ/'}, 'lunch': {es: 'almuerzo', phonetic: '/lʌntʃ/'}, 'make': {es: 'hacer', phonetic: '/meɪk/'}, 'man': {es: 'hombre', phonetic: '/mæn/'}, 'many': {es: 'muchos', phonetic: '/ˈmeni/'}, 'map': {es: 'mapa', phonetic: '/mæp/'}, 'market': {es: 'mercado', phonetic: '/ˈmɑːrkɪt/'}, 'mean': {es: 'significar', phonetic: '/miːn/'}, 'meet': {es: 'conocer', phonetic: '/miːt/'}, 'memory': {es: 'memoria', phonetic: '/ˈmeməri/'}, 'message': {es: 'mensaje', phonetic: '/ˈmesɪdʒ/'}, 'middle': {es: 'medio', phonetic: '/ˈmɪdəl/'}, 'milk': {es: 'leche', phonetic: '/mɪlk/'}, 'minute': {es: 'minuto', phonetic: '/ˈmɪnɪt/'}, 'money': {es: 'dinero', phonetic: '/ˈmʌni/'}, 'month': {es: 'mes', phonetic: '/mʌnθ/'},
+  'moon': {es: 'luna', phonetic: '/muːn/'}, 'morning': {es: 'mañana', phonetic: '/ˈmɔːrnɪŋ/'}, 'mother': {es: 'madre', phonetic: '/ˈmʌðər/'}, 'mountain': {es: 'montaña', phonetic: '/ˈmaʊntən/'}, 'mouth': {es: 'boca', phonetic: '/maʊθ/'}, 'move': {es: 'mover', phonetic: '/muːv/'}, 'movie': {es: 'película', phonetic: '/ˈmuːvi/'}, 'much': {es: 'mucho', phonetic: '/mʌtʃ/'}, 'music': {es: 'música', phonetic: '/ˈmjuːzɪk/'}, 'name': {es: 'nombre', phonetic: '/neɪm/'}, 'near': {es: 'cerca', phonetic: '/nɪr/'}, 'need': {es: 'necesitar', phonetic: '/niːd/'}, 'never': {es: 'nunca', phonetic: '/ˈnevər/'}, 'new': {es: 'nuevo', phonetic: '/njuː/'}, 'news': {es: 'noticias', phonetic: '/njuːz/'}, 'next': {es: 'siguiente', phonetic: '/nekst/'}, 'nice': {es: 'agradable', phonetic: '/naɪs/'}, 'night': {es: 'noche', phonetic: '/naɪt/'}, 'nothing': {es: 'nada', phonetic: '/ˈnʌθɪŋ/'}, 'now': {es: 'ahora', phonetic: '/naʊ/'},
+  'number': {es: 'número', phonetic: '/ˈnʌmbər/'}, 'office': {es: 'oficina', phonetic: '/ˈɒfɪs/'}, 'often': {es: 'a menudo', phonetic: '/ˈɒfən/'}, 'old': {es: 'viejo', phonetic: '/oʊld/'}, 'only': {es: 'solo', phonetic: '/ˈoʊnli/'}, 'open': {es: 'abrir', phonetic: '/ˈoʊpən/'}, 'order': {es: 'orden', phonetic: '/ˈɔːrdər/'}, 'other': {es: 'otro', phonetic: '/ˈʌðər/'}, 'outside': {es: 'afuera', phonetic: '/ˌaʊtˈsaɪd/'}, 'over': {es: 'sobre', phonetic: '/ˈoʊvər/'}, 'own': {es: 'propio', phonetic: '/oʊn/'}, 'page': {es: 'página', phonetic: '/peɪdʒ/'}, 'pain': {es: 'dolor', phonetic: '/peɪn/'}, 'paper': {es: 'papel', phonetic: '/ˈpeɪpər/'}, 'parent': {es: 'padre/madre', phonetic: '/ˈperənt/'}, 'part': {es: 'parte', phonetic: '/pɑːrt/'}, 'pass': {es: 'pasar', phonetic: '/pæs/'}, 'pay': {es: 'pagar', phonetic: '/peɪ/'}, 'peace': {es: 'paz', phonetic: '/piːs/'}, 'people': {es: 'personas', phonetic: '/ˈpiːpəl/'},
+  'place': {es: 'lugar', phonetic: '/pleɪs/'}, 'plan': {es: 'plan', phonetic: '/plæn/'}, 'play': {es: 'jugar', phonetic: '/pleɪ/'}, 'please': {es: 'por favor', phonetic: '/pliːz/'}, 'point': {es: 'punto', phonetic: '/pɔɪnt/'}, 'poor': {es: 'pobre', phonetic: '/pʊr/'}, 'power': {es: 'poder', phonetic: '/ˈpaʊər/'}, 'practice': {es: 'práctica', phonetic: '/ˈpræktɪs/'}, 'prepare': {es: 'preparar', phonetic: '/prɪˈper/'}, 'present': {es: 'presente', phonetic: '/ˈprezənt/'}, 'price': {es: 'precio', phonetic: '/praɪs/'}, 'problem': {es: 'problema', phonetic: '/ˈprɒbləm/'}, 'produce': {es: 'producir', phonetic: '/prəˈdjuːs/'}, 'program': {es: 'programa', phonetic: '/ˈproʊɡræm/'}, 'project': {es: 'proyecto', phonetic: '/ˈprɒdʒekt/'}, 'provide': {es: 'proveer', phonetic: '/prəˈvaɪd/'}, 'public': {es: 'público', phonetic: '/ˈpʌblɪk/'}, 'pull': {es: 'jalar', phonetic: '/pʊl/'}, 'push': {es: 'empujar', phonetic: '/pʊʃ/'}, 'put': {es: 'poner', phonetic: '/pʊt/'},
+  'question': {es: 'pregunta', phonetic: '/ˈkwestʃən/'}, 'quick': {es: 'rápido', phonetic: '/kwɪk/'}, 'quiet': {es: 'tranquilo', phonetic: '/ˈkwaɪət/'}, 'rain': {es: 'lluvia', phonetic: '/reɪn/'}, 'reach': {es: 'alcanzar', phonetic: '/riːtʃ/'}, 'read': {es: 'leer', phonetic: '/riːd/'}, 'ready': {es: 'listo', phonetic: '/ˈredi/'}, 'real': {es: 'real', phonetic: '/riːəl/'}, 'really': {es: 'realmente', phonetic: '/ˈriːəli/'}, 'reason': {es: 'razón', phonetic: '/ˈriːzən/'}, 'receive': {es: 'recibir', phonetic: '/rɪˈsiːv/'}, 'red': {es: 'rojo', phonetic: '/red/'}, 'remember': {es: 'recordar', phonetic: '/rɪˈmembər/'}, 'rest': {es: 'descanso', phonetic: '/rest/'}, 'result': {es: 'resultado', phonetic: '/rɪˈzʌlt/'}, 'return': {es: 'regresar', phonetic: '/rɪˈtɜːrn/'}, 'rich': {es: 'rico', phonetic: '/rɪtʃ/'}, 'right': {es: 'derecha', phonetic: '/raɪt/'}, 'river': {es: 'río', phonetic: '/ˈrɪvər/'}, 'road': {es: 'camino', phonetic: '/roʊd/'},
+  'room': {es: 'habitación', phonetic: '/ruːm/'}, 'run': {es: 'correr', phonetic: '/rʌn/'}, 'safe': {es: 'seguro', phonetic: '/seɪf/'}, 'same': {es: 'mismo', phonetic: '/seɪm/'}, 'save': {es: 'guardar', phonetic: '/seɪv/'}, 'say': {es: 'decir', phonetic: '/seɪ/'}, 'school': {es: 'escuela', phonetic: '/skuːl/'}, 'sea': {es: 'mar', phonetic: '/siː/'}, 'see': {es: 'ver', phonetic: '/siː/'}, 'sell': {es: 'vender', phonetic: '/sel/'}, 'send': {es: 'enviar', phonetic: '/send/'}, 'serious': {es: 'serio', phonetic: '/ˈsɪriəs/'}, 'seven': {es: 'siete', phonetic: '/ˈsevən/'}, 'share': {es: 'compartir', phonetic: '/ʃer/'}, 'she': {es: 'ella', phonetic: '/ʃiː/'}, 'ship': {es: 'barco', phonetic: '/ʃɪp/'}, 'short': {es: 'corto', phonetic: '/ʃɔːrt/'}, 'show': {es: 'mostrar', phonetic: '/ʃoʊ/'}, 'side': {es: 'lado', phonetic: '/saɪd/'}, 'simple': {es: 'simple', phonetic: '/ˈsɪmpəl/'},
+  'since': {es: 'desde', phonetic: '/sɪns/'}, 'sing': {es: 'cantar', phonetic: '/sɪŋ/'}, 'sister': {es: 'hermana', phonetic: '/ˈsɪstər/'}, 'sit': {es: 'sentarse', phonetic: '/sɪt/'}, 'situation': {es: 'situación', phonetic: '/ˌsɪtʃuˈeɪʃən/'}, 'six': {es: 'seis', phonetic: '/sɪks/'}, 'size': {es: 'tamaño', phonetic: '/saɪz/'}, 'skill': {es: 'habilidad', phonetic: '/skɪl/'}, 'sky': {es: 'cielo', phonetic: '/skaɪ/'}, 'sleep': {es: 'dormir', phonetic: '/sliːp/'}, 'small': {es: 'pequeño', phonetic: '/smɔːl/'}, 'smile': {es: 'sonrisa', phonetic: '/smaɪl/'}, 'snow': {es: 'nieve', phonetic: '/snoʊ/'}, 'some': {es: 'algunos', phonetic: '/sʌm/'}, 'someone': {es: 'alguien', phonetic: '/ˈsʌmwʌn/'}, 'something': {es: 'algo', phonetic: '/ˈsʌmθɪŋ/'}, 'sometimes': {es: 'a veces', phonetic: '/ˈsʌmtaɪmz/'}, 'son': {es: 'hijo', phonetic: '/sʌn/'}, 'song': {es: 'canción', phonetic: '/sɒŋ/'}, 'soon': {es: 'pronto', phonetic: '/suːn/'},
+  'sorry': {es: 'lo siento', phonetic: '/ˈsɒri/'}, 'sound': {es: 'sonido', phonetic: '/saʊnd/'}, 'speak': {es: 'hablar', phonetic: '/spiːk/'}, 'special': {es: 'especial', phonetic: '/ˈspeʃəl/'}, 'spend': {es: 'gastar', phonetic: '/spend/'}, 'stand': {es: 'pararse', phonetic: '/stænd/'}, 'star': {es: 'estrella', phonetic: '/stɑːr/'}, 'start': {es: 'empezar', phonetic: '/stɑːrt/'}, 'stay': {es: 'quedarse', phonetic: '/steɪ/'}, 'still': {es: 'todavía', phonetic: '/stɪl/'}, 'stop': {es: 'parar', phonetic: '/stɒp/'}, 'store': {es: 'tienda', phonetic: '/stɔːr/'}, 'story': {es: 'historia', phonetic: '/ˈstɔːri/'}, 'street': {es: 'calle', phonetic: '/striːt/'}, 'strong': {es: 'fuerte', phonetic: '/strɒŋ/'}, 'study': {es: 'estudiar', phonetic: '/ˈstʌdi/'}, 'summer': {es: 'verano', phonetic: '/ˈsʌmər/'}, 'sun': {es: 'sol', phonetic: '/sʌn/'}, 'sure': {es: 'seguro', phonetic: '/ʃʊr/'}, 'surprise': {es: 'sorpresa', phonetic: '/sərˈpraɪz/'},
+  'sweet': {es: 'dulce', phonetic: '/swiːt/'}, 'table': {es: 'mesa', phonetic: '/ˈteɪbəl/'}, 'take': {es: 'tomar', phonetic: '/teɪk/'}, 'talk': {es: 'hablar', phonetic: '/tɔːk/'}, 'tall': {es: 'alto', phonetic: '/tɔːl/'}, 'teach': {es: 'enseñar', phonetic: '/tiːtʃ/'}, 'team': {es: 'equipo', phonetic: '/tiːm/'}, 'tell': {es: 'decir', phonetic: '/tel/'}, 'ten': {es: 'diez', phonetic: '/ten/'}, 'test': {es: 'prueba', phonetic: '/test/'}, 'thank': {es: 'agradecer', phonetic: '/θæŋk/'}, 'think': {es: 'pensar', phonetic: '/θɪŋk/'}, 'three': {es: 'tres', phonetic: '/θriː/'}, 'through': {es: 'a través', phonetic: '/θruː/'}, 'throw': {es: 'lanzar', phonetic: '/θroʊ/'}, 'time': {es: 'tiempo', phonetic: '/taɪm/'}, 'today': {es: 'hoy', phonetic: '/təˈdeɪ/'}, 'together': {es: 'juntos', phonetic: '/təˈɡeðər/'}, 'tomorrow': {es: 'mañana', phonetic: '/təˈmɒroʊ/'}, 'tonight': {es: 'esta noche', phonetic: '/təˈnaɪt/'},
+  'too': {es: 'también', phonetic: '/tuː/'}, 'top': {es: 'parte superior', phonetic: '/tɒp/'}, 'touch': {es: 'tocar', phonetic: '/tʌtʃ/'}, 'town': {es: 'pueblo', phonetic: '/taʊn/'}, 'train': {es: 'tren', phonetic: '/treɪn/'}, 'tree': {es: 'árbol', phonetic: '/triː/'}, 'trip': {es: 'viaje', phonetic: '/trɪp/'}, 'trouble': {es: 'problema', phonetic: '/ˈtrʌbəl/'}, 'true': {es: 'verdadero', phonetic: '/truː/'}, 'trust': {es: 'confianza', phonetic: '/trʌst/'}, 'truth': {es: 'verdad', phonetic: '/truːθ/'}, 'try': {es: 'intentar', phonetic: '/traɪ/'}, 'turn': {es: 'girar', phonetic: '/tɜːrn/'}, 'two': {es: 'dos', phonetic: '/tuː/'}, 'under': {es: 'debajo', phonetic: '/ˈʌndər/'}, 'understand': {es: 'entender', phonetic: '/ˌʌndərˈstænd/'}, 'until': {es: 'hasta', phonetic: '/ʌnˈtɪl/'}, 'use': {es: 'usar', phonetic: '/juːz/'}, 'very': {es: 'muy', phonetic: '/ˈveri/'}, 'voice': {es: 'voz', phonetic: '/vɔɪs/'},
+  'wait': {es: 'esperar', phonetic: '/weɪt/'}, 'walk': {es: 'caminar', phonetic: '/wɔːk/'}, 'wall': {es: 'pared', phonetic: '/wɔːl/'}, 'want': {es: 'querer', phonetic: '/wɒnt/'}, 'war': {es: 'guerra', phonetic: '/wɔːr/'}, 'warm': {es: 'cálido', phonetic: '/wɔːrm/'}, 'wash': {es: 'lavar', phonetic: '/wɒʃ/'}, 'watch': {es: 'reloj/ver', phonetic: '/wɒtʃ/'}, 'water': {es: 'agua', phonetic: '/ˈwɔːtər/'}, 'way': {es: 'camino', phonetic: '/weɪ/'}, 'weak': {es: 'débil', phonetic: '/wiːk/'}, 'wear': {es: 'usar ropa', phonetic: '/wer/'}, 'weather': {es: 'clima', phonetic: '/ˈweðər/'}, 'week': {es: 'semana', phonetic: '/wiːk/'}, 'weight': {es: 'peso', phonetic: '/weɪt/'}, 'well': {es: 'bien', phonetic: '/wel/'}, 'west': {es: 'oeste', phonetic: '/west/'}, 'what': {es: 'qué', phonetic: '/wɒt/'}, 'when': {es: 'cuándo', phonetic: '/wen/'}, 'where': {es: 'dónde', phonetic: '/wer/'},
+  'which': {es: 'cuál', phonetic: '/wɪtʃ/'}, 'while': {es: 'mientras', phonetic: '/waɪl/'}, 'white': {es: 'blanco', phonetic: '/waɪt/'}, 'who': {es: 'quién', phonetic: '/huː/'}, 'whole': {es: 'entero', phonetic: '/hoʊl/'}, 'why': {es: 'por qué', phonetic: '/waɪ/'}, 'wide': {es: 'ancho', phonetic: '/waɪd/'}, 'wife': {es: 'esposa', phonetic: '/waɪf/'}, 'win': {es: 'ganar', phonetic: '/wɪn/'}, 'wind': {es: 'viento', phonetic: '/wɪnd/'}, 'window': {es: 'ventana', phonetic: '/ˈwɪndoʊ/'}, 'winter': {es: 'invierno', phonetic: '/ˈwɪntər/'}, 'wish': {es: 'desear', phonetic: '/wɪʃ/'}, 'with': {es: 'con', phonetic: '/wɪð/'}, 'without': {es: 'sin', phonetic: '/wɪˈðaʊt/'}, 'woman': {es: 'mujer', phonetic: '/ˈwʊmən/'}, 'wonderful': {es: 'maravilloso', phonetic: '/ˈwʌndərfəl/'}, 'word': {es: 'palabra', phonetic: '/wɜːrd/'}, 'work': {es: 'trabajar', phonetic: '/wɜːrk/'}, 'world': {es: 'mundo', phonetic: '/wɜːrld/'},
+  'worry': {es: 'preocuparse', phonetic: '/ˈwʌri/'}, 'write': {es: 'escribir', phonetic: '/raɪt/'}, 'wrong': {es: 'equivocado', phonetic: '/rɒŋ/'}, 'year': {es: 'año', phonetic: '/jɪr/'}, 'yes': {es: 'sí', phonetic: '/jes/'}, 'yesterday': {es: 'ayer', phonetic: '/ˈjestərdeɪ/'}, 'yet': {es: 'todavía', phonetic: '/jet/'}, 'you': {es: 'tú', phonetic: '/juː/'}, 'young': {es: 'joven', phonetic: '/jʌŋ/'}, 'your': {es: 'tu', phonetic: '/jɔːr/'},
+  'accomplish': {es: 'lograr', phonetic: '/əˈkɒmplɪʃ/'}, 'achieve': {es: 'lograr', phonetic: '/əˈtʃiːv/'}, 'acknowledge': {es: 'reconocer', phonetic: '/əkˈnɒlɪdʒ/'}, 'acquire': {es: 'adquirir', phonetic: '/əˈkwaɪər/'}, 'adapt': {es: 'adaptar', phonetic: '/əˈdæpt/'}, 'adequate': {es: 'adecuado', phonetic: '/ˈædɪkwət/'}, 'advantage': {es: 'ventaja', phonetic: '/ədˈvɑːntɪdʒ/'}, 'afford': {es: 'permitirse', phonetic: '/əˈfɔːrd/'}, 'ambitious': {es: 'ambicioso', phonetic: '/æmˈbɪʃəs/'}, 'analyze': {es: 'analizar', phonetic: '/ˈænəlaɪz/'}, 'appreciate': {es: 'apreciar', phonetic: '/əˈpriːʃieɪt/'}, 'approach': {es: 'enfoque', phonetic: '/əˈproʊtʃ/'}, 'appropriate': {es: 'apropiado', phonetic: '/əˈproʊpriət/'}, 'assess': {es: 'evaluar', phonetic: '/əˈses/'}, 'assume': {es: 'asumir', phonetic: '/əˈsjuːm/'}, 'attempt': {es: 'intentar', phonetic: '/əˈtempt/'}, 'available': {es: 'disponible', phonetic: '/əˈveɪləbəl/'}, 'aware': {es: 'consciente', phonetic: '/əˈwer/'}, 'benefit': {es: 'beneficio', phonetic: '/ˈbenɪfɪt/'}, 'capable': {es: 'capaz', phonetic: '/ˈkeɪpəbəl/'},
+  'challenge': {es: 'desafío', phonetic: '/ˈtʃælɪndʒ/'}, 'circumstance': {es: 'circunstancia', phonetic: '/ˈsɜːrkəmstæns/'}, 'colleague': {es: 'colega', phonetic: '/ˈkɒliːɡ/'}, 'communicate': {es: 'comunicar', phonetic: '/kəˈmjuːnɪkeɪt/'}, 'compare': {es: 'comparar', phonetic: '/kəmˈper/'}, 'complain': {es: 'quejarse', phonetic: '/kəmˈpleɪn/'}, 'complex': {es: 'complejo', phonetic: '/ˈkɒmpleks/'}, 'concept': {es: 'concepto', phonetic: '/ˈkɒnsept/'}, 'concern': {es: 'preocupación', phonetic: '/kənˈsɜːrn/'}, 'conclude': {es: 'concluir', phonetic: '/kənˈkluːd/'}, 'consequence': {es: 'consecuencia', phonetic: '/ˈkɒnsɪkwəns/'}, 'convince': {es: 'convencer', phonetic: '/kənˈvɪns/'}, 'crucial': {es: 'crucial', phonetic: '/ˈkruːʃəl/'}, 'curious': {es: 'curioso', phonetic: '/ˈkjʊriəs/'}, 'debate': {es: 'debate', phonetic: '/dɪˈbeɪt/'}, 'decade': {es: 'década', phonetic: '/ˈdekeɪd/'}, 'define': {es: 'definir', phonetic: '/dɪˈfaɪn/'}, 'demand': {es: 'demanda', phonetic: '/dɪˈmænd/'}, 'demonstrate': {es: 'demostrar', phonetic: '/ˈdemənstreɪt/'}, 'despite': {es: 'a pesar de', phonetic: '/dɪˈspaɪt/'},
+  'determine': {es: 'determinar', phonetic: '/dɪˈtɜːrmɪn/'}, 'develop': {es: 'desarrollar', phonetic: '/dɪˈveləp/'}, 'discussion': {es: 'discusión', phonetic: '/dɪˈskʌʃən/'}, 'diverse': {es: 'diverso', phonetic: '/daɪˈvɜːrs/'}, 'doubt': {es: 'duda', phonetic: '/daʊt/'}, 'efficient': {es: 'eficiente', phonetic: '/ɪˈfɪʃənt/'}, 'eliminate': {es: 'eliminar', phonetic: '/ɪˈlɪmɪneɪt/'}, 'emerge': {es: 'surgir', phonetic: '/ɪˈmɜːrdʒ/'}, 'encourage': {es: 'animar', phonetic: '/ɪnˈkʌrɪdʒ/'}, 'enhance': {es: 'mejorar', phonetic: '/ɪnˈhæns/'}, 'enormous': {es: 'enorme', phonetic: '/ɪˈnɔːrməs/'}, 'ensure': {es: 'asegurar', phonetic: '/ɪnˈʃʊr/'}, 'essential': {es: 'esencial', phonetic: '/ɪˈsenʃəl/'}, 'establish': {es: 'establecer', phonetic: '/ɪˈstæblɪʃ/'}, 'evaluate': {es: 'evaluar', phonetic: '/ɪˈvæljueɪt/'}, 'eventually': {es: 'eventualmente', phonetic: '/ɪˈventʃuəli/'}, 'evidence': {es: 'evidencia', phonetic: '/ˈevɪdəns/'}, 'examine': {es: 'examinar', phonetic: '/ɪɡˈzæmɪn/'}, 'expand': {es: 'expandir', phonetic: '/ɪkˈspænd/'}, 'feature': {es: 'característica', phonetic: '/ˈfiːtʃər/'},
+  'flexible': {es: 'flexible', phonetic: '/ˈfleksəbəl/'}, 'focus': {es: 'enfoque', phonetic: '/ˈfoʊkəs/'}, 'framework': {es: 'marco', phonetic: '/ˈfreɪmwɜːrk/'}, 'generate': {es: 'generar', phonetic: '/ˈdʒenəreɪt/'}, 'genuine': {es: 'genuino', phonetic: '/ˈdʒenjuɪn/'}, 'global': {es: 'global', phonetic: '/ˈɡloʊbəl/'}, 'goal': {es: 'meta', phonetic: '/ɡoʊl/'}, 'guarantee': {es: 'garantía', phonetic: '/ˌɡærənˈtiː/'}, 'handle': {es: 'manejar', phonetic: '/ˈhændəl/'}, 'highlight': {es: 'destacar', phonetic: '/ˈhaɪlaɪt/'}, 'identify': {es: 'identificar', phonetic: '/aɪˈdentɪfaɪ/'}, 'illustrate': {es: 'ilustrar', phonetic: '/ˈɪləstreɪt/'}, 'impact': {es: 'impacto', phonetic: '/ˈɪmpækt/'}, 'implement': {es: 'implementar', phonetic: '/ˈɪmplɪment/'}, 'improve': {es: 'mejorar', phonetic: '/ɪmˈpruːv/'}, 'indicate': {es: 'indicar', phonetic: '/ˈɪndɪkeɪt/'}, 'individual': {es: 'individuo', phonetic: '/ˌɪndɪˈvɪdʒuəl/'}, 'influence': {es: 'influencia', phonetic: '/ˈɪnfluəns/'}, 'innovation': {es: 'innovación', phonetic: '/ˌɪnəˈveɪʃən/'}, 'investigate': {es: 'investigar', phonetic: '/ɪnˈvestɪɡeɪt/'},
+  'involve': {es: 'involucrar', phonetic: '/ɪnˈvɒlv/'}, 'maintain': {es: 'mantener', phonetic: '/meɪnˈteɪn/'}, 'majority': {es: 'mayoría', phonetic: '/məˈdʒɒrəti/'}, 'massive': {es: 'masivo', phonetic: '/ˈmæsɪv/'}, 'negotiate': {es: 'negociar', phonetic: '/nɪˈɡoʊʃieɪt/'}, 'network': {es: 'red', phonetic: '/ˈnetwɜːrk/'}, 'objective': {es: 'objetivo', phonetic: '/əbˈdʒektɪv/'}, 'obtain': {es: 'obtener', phonetic: '/əbˈteɪn/'}, 'obvious': {es: 'obvio', phonetic: '/ˈɒbviəs/'}, 'operate': {es: 'operar', phonetic: '/ˈɒpəreɪt/'}, 'option': {es: 'opción', phonetic: '/ˈɒpʃən/'}, 'organize': {es: 'organizar', phonetic: '/ˈɔːrɡənaɪz/'}, 'outcome': {es: 'resultado', phonetic: '/ˈaʊtkʌm/'}, 'overcome': {es: 'superar', phonetic: '/ˌoʊvərˈkʌm/'}, 'participate': {es: 'participar', phonetic: '/pɑːrˈtɪsɪpeɪt/'}, 'partner': {es: 'socio', phonetic: '/ˈpɑːrtnər/'}, 'passion': {es: 'pasión', phonetic: '/ˈpæʃən/'}, 'pattern': {es: 'patrón', phonetic: '/ˈpætərn/'}, 'perspective': {es: 'perspectiva', phonetic: '/pərˈspektɪv/'}, 'philosophy': {es: 'filosofía', phonetic: '/fɪˈlɒsəfi/'},
+  'policy': {es: 'política', phonetic: '/ˈpɒləsi/'}, 'positive': {es: 'positivo', phonetic: '/ˈpɒzətɪv/'}, 'potential': {es: 'potencial', phonetic: '/pəˈtenʃəl/'}, 'predict': {es: 'predecir', phonetic: '/prɪˈdɪkt/'}, 'prefer': {es: 'preferir', phonetic: '/prɪˈfɜːr/'}, 'previous': {es: 'previo', phonetic: '/ˈpriːviəs/'}, 'principle': {es: 'principio', phonetic: '/ˈprɪnsəpəl/'}, 'priority': {es: 'prioridad', phonetic: '/praɪˈɒrəti/'}, 'process': {es: 'proceso', phonetic: '/ˈprɒses/'}, 'professional': {es: 'profesional', phonetic: '/prəˈfeʃənəl/'}, 'promote': {es: 'promover', phonetic: '/prəˈmoʊt/'}, 'propose': {es: 'proponer', phonetic: '/prəˈpoʊz/'}, 'pursue': {es: 'perseguir', phonetic: '/pərˈsjuː/'}, 'range': {es: 'rango', phonetic: '/reɪndʒ/'}, 'recover': {es: 'recuperar', phonetic: '/rɪˈkʌvər/'}, 'region': {es: 'región', phonetic: '/ˈriːdʒən/'}, 'reject': {es: 'rechazar', phonetic: '/rɪˈdʒekt/'}, 'relevant': {es: 'relevante', phonetic: '/ˈreləvənt/'}, 'remarkable': {es: 'notable', phonetic: '/rɪˈmɑːrkəbəl/'}, 'require': {es: 'requerir', phonetic: '/rɪˈkwaɪər/'},
+  'resolve': {es: 'resolver', phonetic: '/rɪˈzɒlv/'}, 'resource': {es: 'recurso', phonetic: '/rɪˈsɔːrs/'}, 'respond': {es: 'responder', phonetic: '/rɪˈspɒnd/'}, 'reveal': {es: 'revelar', phonetic: '/rɪˈviːl/'}, 'routine': {es: 'rutina', phonetic: '/ruːˈtiːn/'}, 'schedule': {es: 'horario', phonetic: '/ˈskedʒuːl/'}, 'secure': {es: 'seguro', phonetic: '/sɪˈkjʊr/'}, 'significant': {es: 'significativo', phonetic: '/sɪɡˈnɪfɪkənt/'}, 'similar': {es: 'similar', phonetic: '/ˈsɪmɪlər/'}, 'source': {es: 'fuente', phonetic: '/sɔːrs/'}, 'specific': {es: 'específico', phonetic: '/spəˈsɪfɪk/'}, 'stable': {es: 'estable', phonetic: '/ˈsteɪbəl/'}, 'strategy': {es: 'estrategia', phonetic: '/ˈstrætədʒi/'}, 'struggle': {es: 'luchar', phonetic: '/ˈstrʌɡəl/'}, 'succeed': {es: 'tener éxito', phonetic: '/səkˈsiːd/'}, 'sufficient': {es: 'suficiente', phonetic: '/səˈfɪʃənt/'}, 'survive': {es: 'sobrevivir', phonetic: '/sərˈvaɪv/'}, 'target': {es: 'objetivo', phonetic: '/ˈtɑːrɡɪt/'}, 'technique': {es: 'técnica', phonetic: '/tekˈniːk/'}, 'theory': {es: 'teoría', phonetic: '/ˈθɪəri/'},
+  'tradition': {es: 'tradición', phonetic: '/trəˈdɪʃən/'}, 'transfer': {es: 'transferir', phonetic: '/trænsˈfɜːr/'}, 'transform': {es: 'transformar', phonetic: '/trænsˈfɔːrm/'}, 'trend': {es: 'tendencia', phonetic: '/trend/'}, 'unique': {es: 'único', phonetic: '/juˈniːk/'}, 'valid': {es: 'válido', phonetic: '/ˈvælɪd/'}, 'vary': {es: 'variar', phonetic: '/ˈveri/'}, 'vast': {es: 'vasto', phonetic: '/vɑːst/'}, 'version': {es: 'versión', phonetic: '/ˈvɜːrʒən/'}, 'visible': {es: 'visible', phonetic: '/ˈvɪzəbəl/'}, 'vision': {es: 'visión', phonetic: '/ˈvɪʒən/'}, 'vital': {es: 'vital', phonetic: '/ˈvaɪtəl/'}, 'vulnerable': {es: 'vulnerable', phonetic: '/ˈvʌlnərəbəl/'}, 'wealth': {es: 'riqueza', phonetic: '/welθ/'}, 'widespread': {es: 'generalizado', phonetic: '/ˈwaɪdspred/'}, 'worth': {es: 'valor', phonetic: '/wɜːrθ/'}, 'yield': {es: 'ceder', phonetic: '/jiːld/'},
+
   // General
   'important': {es: 'importante', phonetic: '/ɪmˈpɔːrtənt/'},
   'different': {es: 'diferente', phonetic: '/ˈdɪfrənt/'},
@@ -7744,8 +8535,199 @@ if('serviceWorker' in navigator) {
 // ============================================
 // INITIALIZATION
 // ============================================
+// ============================================
+// WORD OF THE DAY
+// ============================================
+var wordOfDayList = [
+  {en:'Serendipity',es:'Serendipia - encontrar algo bueno por casualidad',phonetic:'/ˌserənˈdɪpɪti/',ex:'Finding that bookstore was pure serendipity.'},
+  {en:'Resilient',es:'Resiliente - capaz de recuperarse',phonetic:'/rɪˈzɪliənt/',ex:'She is resilient and always bounces back.'},
+  {en:'Wanderlust',es:'Pasión por viajar',phonetic:'/ˈwɒndərlʌst/',ex:'His wanderlust took him to 30 countries.'},
+  {en:'Ephemeral',es:'Efímero - que dura muy poco',phonetic:'/ɪˈfemərəl/',ex:'Youth is ephemeral, so enjoy it.'},
+  {en:'Perseverance',es:'Perseverancia',phonetic:'/ˌpɜːrsɪˈvɪrəns/',ex:'Success requires perseverance.'},
+  {en:'Eloquent',es:'Elocuente - que habla bien',phonetic:'/ˈeləkwənt/',ex:'She gave an eloquent speech.'},
+  {en:'Gratitude',es:'Gratitud',phonetic:'/ˈɡrætɪtjuːd/',ex:'I feel gratitude for my family.'},
+  {en:'Inevitable',es:'Inevitable',phonetic:'/ɪnˈevɪtəbəl/',ex:'Change is inevitable.'},
+  {en:'Paradigm',es:'Paradigma - modelo',phonetic:'/ˈpærədaɪm/',ex:'This shifted the paradigm.'},
+  {en:'Ambitious',es:'Ambicioso',phonetic:'/æmˈbɪʃəs/',ex:'She is ambitious and hardworking.'},
+  {en:'Compassion',es:'Compasión',phonetic:'/kəmˈpæʃən/',ex:'Show compassion to those in need.'},
+  {en:'Diligent',es:'Diligente',phonetic:'/ˈdɪlɪdʒənt/',ex:'He is a diligent student.'},
+  {en:'Nostalgia',es:'Nostalgia',phonetic:'/nɒˈstældʒə/',ex:'The song filled me with nostalgia.'},
+  {en:'Pragmatic',es:'Pragmático',phonetic:'/præɡˈmætɪk/',ex:'We need a pragmatic solution.'},
+  {en:'Tenacious',es:'Tenaz - persistente',phonetic:'/təˈneɪʃəs/',ex:'Tenacious people never give up.'},
+  {en:'Harmony',es:'Armonía',phonetic:'/ˈhɑːrməni/',ex:'They live in harmony with nature.'},
+  {en:'Versatile',es:'Versátil',phonetic:'/ˈvɜːrsətaɪl/',ex:'She is a versatile musician.'},
+  {en:'Profound',es:'Profundo',phonetic:'/prəˈfaʊnd/',ex:'The book had a profound impact.'},
+  {en:'Catalyst',es:'Catalizador',phonetic:'/ˈkætəlɪst/',ex:'The crisis was a catalyst for reform.'},
+  {en:'Flourish',es:'Florecer - prosperar',phonetic:'/ˈflʌrɪʃ/',ex:'The business started to flourish.'},
+  {en:'Authentic',es:'Auténtico',phonetic:'/ɔːˈθentɪk/',ex:'Be authentic, be yourself.'},
+  {en:'Empathy',es:'Empatía',phonetic:'/ˈempəθi/',ex:'Good leaders show empathy.'},
+  {en:'Innovative',es:'Innovador',phonetic:'/ˈɪnəveɪtɪv/',ex:'Known for innovative products.'},
+  {en:'Perspective',es:'Perspectiva',phonetic:'/pərˈspektɪv/',ex:'Travel gives new perspective.'},
+  {en:'Charisma',es:'Carisma',phonetic:'/kəˈrɪzmə/',ex:'The leader has incredible charisma.'},
+  {en:'Meticulous',es:'Meticuloso',phonetic:'/məˈtɪkjələs/',ex:'She is meticulous in her work.'},
+  {en:'Epiphany',es:'Epifanía - revelación',phonetic:'/ɪˈpɪfəni/',ex:'I had an epiphany about my career.'},
+  {en:'Wholesome',es:'Saludable/positivo',phonetic:'/ˈhoʊlsəm/',ex:'A wholesome family movie.'},
+  {en:'Threshold',es:'Umbral',phonetic:'/ˈθreʃhoʊld/',ex:'On the threshold of a new era.'},
+  {en:'Resilience',es:'Resiliencia',phonetic:'/rɪˈzɪliəns/',ex:'Resilience is key to overcoming challenges.'}
+];
+
+function getWordOfDay() {
+  var d = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  return wordOfDayList[d % wordOfDayList.length];
+}
+
+function renderWordOfDay() {
+  var w = getWordOfDay();
+  return '<div class="wotd-banner" onclick="speakWord(\'' + w.en + '\')">' +
+    '<div class="wotd-label">📅 PALABRA DEL DÍA</div>' +
+    '<div class="wotd-word">' + w.en + '</div>' +
+    '<div class="wotd-phonetic">' + w.phonetic + ' 🔊</div>' +
+    '<div class="wotd-meaning">' + w.es + '</div>' +
+    '<div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:6px;font-style:italic">"' + w.ex + '"</div></div>';
+}
+
+// ============================================
+// ACHIEVEMENTS
+// ============================================
+function getAchievements() {
+  var a = [];
+  var wl = parseInt(localStorage.getItem('wordsLearned') || '0');
+  var streak = parseInt(localStorage.getItem('streak') || '0');
+  var lp = getLevelProgress();
+  var pc = Object.values(lp).filter(function(v) { return v === 'passed'; }).length;
+  if (wl >= 10) a.push({i:'📚',n:'10 Palabras'});
+  if (wl >= 50) a.push({i:'🎯',n:'50 Palabras'});
+  if (wl >= 100) a.push({i:'💎',n:'100 Palabras'});
+  if (wl >= 500) a.push({i:'👑',n:'500 Palabras'});
+  if (streak >= 3) a.push({i:'🔥',n:streak+' Días'});
+  if (streak >= 7) a.push({i:'⚡',n:'Semana Perfecta'});
+  if (streak >= 30) a.push({i:'🏆',n:'Mes de Fuego'});
+  if (pc >= 1) a.push({i:'✅',n:'Primer Quiz'});
+  if (pc >= 3) a.push({i:'🌟',n:'3 Niveles'});
+  if (pc >= 6) a.push({i:'🎓',n:'Maestro Total'});
+  return a;
+}
+
+function renderAchievementBadges() {
+  var a = getAchievements();
+  if (!a.length) return '';
+  return '<div class="badges-row">' + a.map(function(x) { return '<span class="achievement-badge">' + x.i + ' ' + x.n + '</span>'; }).join('') + '</div>';
+}
+
+// ============================================
+// FLASHCARD STUDY MODE
+// ============================================
+var fcWords = [], fcIdx = 0, fcKnown = 0;
+
+function startFlashcards(key) {
+  var cat = vocabularyDB[key]; if (!cat) return;
+  fcWords = cat.words.slice().sort(function() { return Math.random() - 0.5; });
+  fcIdx = 0; fcKnown = 0; renderFlashcard();
+}
+
+function renderFlashcard() {
+  var cont = document.getElementById('vocab-content');
+  var cats = document.getElementById('vocab-categories');
+  if (fcIdx >= fcWords.length) {
+    var p = Math.round((fcKnown / fcWords.length) * 100);
+    cont.innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:64px;margin-bottom:16px">' + (p >= 80 ? '🏆' : '📖') + '</div><h3 style="margin-bottom:12px">¡Sesión completada!</h3><p style="color:#a5b4fc;font-size:1.2rem">' + p + '%</p><p style="color:#94a3b8">' + fcKnown + '/' + fcWords.length + ' conocidas</p><div style="margin-top:20px"><button onclick="fcIdx=0;fcKnown=0;renderFlashcard()" style="padding:12px 24px;border:none;border-radius:12px;background:var(--primary);color:white;cursor:pointer;font-weight:600;margin:4px">🔄 Repetir</button><button onclick="renderVocabCategories()" style="padding:12px 24px;border:none;border-radius:12px;background:rgba(255,255,255,0.1);color:white;cursor:pointer;margin:4px">← Volver</button></div></div>';
+    return;
+  }
+  var w = fcWords[fcIdx];
+  cats.style.display = 'none'; cont.style.display = 'block';
+  cont.innerHTML = '<div style="padding:16px"><button class="back-btn" onclick="renderVocabCategories()">← Volver</button><p style="text-align:center;color:#94a3b8;margin:8px 0">Tarjeta ' + (fcIdx+1) + '/' + fcWords.length + '</p><div class="flashcard-container" id="fcBox" onclick="this.classList.toggle(\'flipped\')"><div class="flashcard-inner"><div class="flashcard-front"><span style="font-size:2.5rem;margin-bottom:8px">' + (w.emoji||'📝') + '</span><span style="font-size:1.8rem;font-weight:900;color:white">' + w.en + '</span><span style="font-size:0.9rem;color:#a5b4fc;margin-top:4px">' + (w.phonetic||'') + '</span><span style="font-size:0.75rem;color:#64748b;margin-top:12px">👆 Toca para ver traducción</span></div><div class="flashcard-back"><span style="font-size:2.5rem;margin-bottom:8px">' + (w.emoji||'📝') + '</span><span style="font-size:1.5rem;font-weight:700;color:white">' + w.es + '</span><span style="font-size:1rem;color:#a5b4fc;margin-top:8px">' + w.en + '</span></div></div></div><div style="display:flex;justify-content:center;gap:12px;margin-top:16px"><button onclick="fcIdx++;renderFlashcard()" style="padding:14px 28px;border:none;border-radius:14px;background:rgba(239,68,68,0.2);color:#ef4444;cursor:pointer;font-weight:700;font-size:1rem;flex:1;max-width:160px">😕 No sé</button><button onclick="fcKnown++;fcIdx++;var x=parseInt(localStorage.getItem(\'wordsLearned\')||0);localStorage.setItem(\'wordsLearned\',x+1);renderFlashcard()" style="padding:14px 28px;border:none;border-radius:14px;background:rgba(16,185,129,0.2);color:#10b981;cursor:pointer;font-weight:700;font-size:1rem;flex:1;max-width:160px">✅ Conozco</button></div></div>';
+}
+
+
+// ============================================
+// SPEAK FULL TEXT (for readings)
+// ============================================
+var currentReadingText = '';
+var fullTextUtterances = [];
+var isReadingAloud = false;
+
+function speakFullText() {
+  stopFullText();
+  var textArea = document.getElementById('readingTextArea');
+  if (!textArea) return;
+  var text = textArea.innerText || textArea.textContent;
+  if (!text) return;
+  
+  isReadingAloud = true;
+  var btn = document.getElementById('listenFullBtn');
+  if (btn) btn.innerHTML = '🔊 Reproduciendo...';
+  
+  // Split into sentences for better TTS
+  var sentences = text.replace(/\n+/g, '. ').split(/(?<=[.!?])\s+/);
+  var idx = 0;
+  
+  function speakNext() {
+    if (idx >= sentences.length || !isReadingAloud) {
+      isReadingAloud = false;
+      if (btn) btn.innerHTML = '🔊 Escuchar texto completo';
+      return;
+    }
+    var s = sentences[idx].trim();
+    if (!s) { idx++; speakNext(); return; }
+    var utter = new SpeechSynthesisUtterance(s);
+    utter.lang = 'en-US';
+    utter.rate = 0.85;
+    var bv = getBestVoice(); if (bv) utter.voice = bv;
+    utter.lang = 'en-US';
+    utter.pitch = 1;
+    utter.onend = function() { idx++; speakNext(); };
+    utter.onerror = function() { idx++; speakNext(); };
+    window.speechSynthesis.speak(utter);
+  }
+  speakNext();
+}
+
+function stopFullText() {
+  isReadingAloud = false;
+  window.speechSynthesis.cancel();
+  var btn = document.getElementById('listenFullBtn');
+  if (btn) btn.innerHTML = '🔊 Escuchar texto completo';
+}
+
+function speakConversation() {
+  stopFullText();
+  var area = document.getElementById('dialogueArea');
+  if (!area) return;
+  isReadingAloud = true;
+  var btn = document.getElementById('listenConvBtn');
+  if (btn) btn.innerHTML = '🔊 Reproduciendo...';
+  
+  var lines = area.querySelectorAll('.dialogue-text');
+  var idx = 0;
+  
+  function speakNext() {
+    if (idx >= lines.length || !isReadingAloud) {
+      isReadingAloud = false;
+      if (btn) btn.innerHTML = '🔊 Escuchar conversación';
+      return;
+    }
+    var text = lines[idx].textContent.trim();
+    if (!text) { idx++; speakNext(); return; }
+    // Highlight current line
+    lines.forEach(function(l) { l.style.background = ''; });
+    lines[idx].style.background = 'rgba(99,102,241,0.2)';
+    lines[idx].style.borderRadius = '8px';
+    
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    utter.rate = 0.8;
+    var bv2 = getBestVoice(); if (bv2) utter.voice = bv2;
+    utter.lang = 'en-US';
+    utter.onend = function() { idx++; setTimeout(speakNext, 400); };
+    utter.onerror = function() { idx++; speakNext(); };
+    window.speechSynthesis.speak(utter);
+  }
+  speakNext();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderVocabCategories();
+
   
   // Initialize monetization
   checkPremiumStatus();
@@ -7803,5 +8785,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Solo se muestra cuando el trial expira o el usuario hace clic
 });
 </script>
+
 </body>
 </html>
