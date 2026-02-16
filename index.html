@@ -6948,8 +6948,9 @@ function updatePremiumUI() {
         ad.classList.remove('hidden');
       }
     });
-    // Mostrar fallback después de un tiempo si AdSense no carga
+    // Mostrar fallback después de un tiempo si AdSense no carga Y no es premium
     setTimeout(() => {
+      if(isPremium || isInTrial) return;
       const mainAd = document.querySelector('#adBannerTop ins.adsbygoogle');
       if(mainAd && (!mainAd.innerHTML || mainAd.innerHTML.trim() === '')) {
         document.getElementById('adFallbackTop')?.classList.remove('hidden');
